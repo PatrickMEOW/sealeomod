@@ -1,6 +1,7 @@
-package io.github.patrickmeow.sealeo.utils
+package io.github.patrickmeow.sealeo.ui
 
 import io.github.patrickmeow.sealeo.features.Category
+import io.github.patrickmeow.sealeo.utils.RenderUtils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
@@ -22,7 +23,7 @@ object ClickGui : GuiScreen() {
     private val ANIMATION_DURATION: Long = 150
 
     init {
-        this.selectedCategory = Category.DUNGEONS
+        selectedCategory = Category.DUNGEONS
     }
 
     override fun initGui() {
@@ -35,8 +36,8 @@ object ClickGui : GuiScreen() {
         animationStartTime = System.currentTimeMillis()
         searchString = "Search.."
         sc = ScaledResolution(mc)
-        this.x = ((sc!!.scaledWidth - width) / 2).toFloat()
-        this.y = ((sc!!.scaledHeight - height) / 2).toFloat()
+        x = ((sc!!.scaledWidth - width) / 2).toFloat()
+        y = ((sc!!.scaledHeight - height) / 2).toFloat()
     }
 
     private fun updateAnimationState() {

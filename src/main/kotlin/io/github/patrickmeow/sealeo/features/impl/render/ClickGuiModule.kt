@@ -4,7 +4,7 @@ import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
-import io.github.patrickmeow.sealeo.utils.ClickGui
+import io.github.patrickmeow.sealeo.ui.ClickGui
 import org.lwjgl.input.Keyboard
 
 object ClickGuiModule : Module(
