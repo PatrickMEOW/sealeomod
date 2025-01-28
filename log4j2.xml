@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Loggers>
+        <Logger name="io.github.patrickmeow.sealeo" level="ERROR" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
