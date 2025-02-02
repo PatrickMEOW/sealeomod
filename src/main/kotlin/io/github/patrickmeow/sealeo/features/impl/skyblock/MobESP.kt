@@ -1,11 +1,10 @@
-package io.github.patrickmeow.sealeo.features.impl.render
+package io.github.patrickmeow.sealeo.features.impl.skyblock
 
 import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.utils.RenderUtils
 import io.github.patrickmeow.sealeo.utils.Vector3
-import net.minecraft.block.BlockChest
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraft.util.AxisAlignedBB
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -13,17 +12,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 
-import net.minecraft.client.renderer.GlStateManager  // Import for GlStateManager usage
 import net.minecraft.entity.monster.EntityMob
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.BlockPos
 
 object MobESP : Module(
     "Mob ESP",
     "Highlights mobs through walls",
-    Category.RENDER
+    Category.SKYBLOCK
 ) {
 
     @SubscribeEvent

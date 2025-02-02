@@ -1,14 +1,8 @@
 package io.github.patrickmeow.sealeo
 
 import io.github.patrickmeow.sealeo.features.ModuleManager
-import io.github.patrickmeow.sealeo.features.ModuleManager.modules
-import io.github.patrickmeow.sealeo.features.impl.movement.BetterBlink
-import io.github.patrickmeow.sealeo.features.impl.movement.Blink
-import io.github.patrickmeow.sealeo.features.impl.movement.Simulation
-import io.github.patrickmeow.sealeo.features.impl.movement.ToggleSprint
 import io.github.patrickmeow.sealeo.features.impl.render.ClickGuiModule
-import io.github.patrickmeow.sealeo.features.impl.render.MobESP
-import io.github.patrickmeow.sealeo.features.impl.skyblock.SlotBinding
+import io.github.patrickmeow.sealeo.utils.RenderUtils
 import io.github.patrickmeow.sealeo.utils.RoundedRect
 import io.github.patrickmeow.sealeo.utils.TickDelays
 import net.minecraft.client.Minecraft
@@ -40,6 +34,7 @@ class SealeoMod {
         MinecraftForge.EVENT_BUS.register(TickDelays())
         MinecraftForge.EVENT_BUS.register(ModuleManager)
         MinecraftForge.EVENT_BUS.register(ClickGuiModule)
+        MinecraftForge.EVENT_BUS.register(RenderUtils)
         RoundedRect.initShaders()
     }
 

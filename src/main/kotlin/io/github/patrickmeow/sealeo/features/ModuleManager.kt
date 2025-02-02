@@ -2,20 +2,15 @@ package io.github.patrickmeow.sealeo.features
 
 import io.github.patrickmeow.sealeo.events.ChatReceivedEvent
 import io.github.patrickmeow.sealeo.events.InputEvent
-import io.github.patrickmeow.sealeo.features.impl.movement.BetterBlink
-import io.github.patrickmeow.sealeo.features.impl.movement.Blink
-import io.github.patrickmeow.sealeo.features.impl.movement.Blink.settings
 import io.github.patrickmeow.sealeo.features.impl.movement.Simulation
 import io.github.patrickmeow.sealeo.features.impl.movement.ToggleSprint
 import io.github.patrickmeow.sealeo.features.impl.render.ClickGuiModule
-import io.github.patrickmeow.sealeo.features.impl.render.MobESP
+import io.github.patrickmeow.sealeo.features.impl.skyblock.MobESP
+import io.github.patrickmeow.sealeo.features.impl.skyblock.RiftHelper
 import io.github.patrickmeow.sealeo.features.impl.skyblock.SlotBinding
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
 import net.minecraft.network.Packet
-import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
 
 
@@ -27,7 +22,7 @@ object ModuleManager {
 
     val messageFunctions = mutableListOf<MessageFunction>()
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
-    val modules: ArrayList<Module> = arrayListOf(Blink, ToggleSprint, MobESP, SlotBinding, Simulation, ClickGuiModule)
+    val modules: ArrayList<Module> = arrayListOf(ToggleSprint, SlotBinding, Simulation, ClickGuiModule, RiftHelper, MobESP)
 
 
     fun getModule(name : String): Module? = modules.firstOrNull {it.name.equals(name, true)}

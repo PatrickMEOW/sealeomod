@@ -30,18 +30,22 @@ object RoundedRect {
         RoundedRectangle.shaderRadiusUniform.setValue(botR, topR, botL, topL)
         RoundedRectangle.shaderBorderThicknessUniform.setValue(borderThickness)
         RoundedRectangle.shaderEdgeSoftnessUniform.setValue(edgeSoftness)
-        RoundedRectangle.shaderColorUniform.setValue(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha.toFloat())
-        RoundedRectangle.shaderColor2Uniform.setValue(color2.red / 255f, color2.green / 255f, color2.blue / 255f, color2.alpha.toFloat())
+        RoundedRectangle.shaderColorUniform.setValue(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
+        RoundedRectangle.shaderColor2Uniform.setValue(color2.red / 255f, color2.green / 255f, color2.blue / 255f, color2.alpha / 255f)
         val direction = RoundedRectangle.directionVecs[gradientDir]
         RoundedRectangle.shaderGradientDir.setValue(direction.first, direction.second)
-        RoundedRectangle.shaderBorderColorUniform.setValue(borderColor.red / 255f, borderColor.green / 255f, borderColor.blue / 255f, borderColor.alpha.toFloat())
-        RoundedRectangle.shaderShadowColorUniform.setValue(shadowColor.red / 255f, shadowColor.green / 255f, shadowColor.blue / 255f, shadowColor.alpha.toFloat())
+        RoundedRectangle.shaderBorderColorUniform.setValue(borderColor.red / 255f, borderColor.green / 255f, borderColor.blue / 255f, borderColor.alpha / 255f)
+        RoundedRectangle.shaderShadowColorUniform.setValue(shadowColor.red / 255f, shadowColor.green / 255f, shadowColor.blue / 255f, shadowColor.alpha / 255f)
         RoundedRectangle.shaderShadowSoftness.setValue(shadowSoftness)
-
         UIBlock.drawBlockWithActiveShader(matrixStack, color, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
 
         RoundedRectangle.shader.unbind()
     }
+
+
+
+
+
 
     fun drawHSBBox(matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, color: Color) {
         if (!HSBBox.isInitialized() || !HSBBox.shader.usable) return

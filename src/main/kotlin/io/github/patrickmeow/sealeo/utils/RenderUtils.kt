@@ -4,15 +4,21 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.universal.shader.UShader
 import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.SealeoMod
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
+import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.fml.common.eventhandler.EventPriority
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.vector.Vector2f
@@ -56,7 +62,7 @@ object RenderUtils {
         }
     }
 
-    fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, edgeSoftness: Number = 2f) =
+    fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, edgeSoftness: Number = 0f) =
         roundedRectangle(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color, color, color,
             0f, radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), edgeSoftness)
 
@@ -255,6 +261,146 @@ object RenderUtils {
         enableLighting()
     }
 
+    fun trace(blockPos: BlockPos, color: Vector3, alpha: Float, lineWidth: Float = 2.5f) {
+        val player = mc.thePlayer
+
+        val x = blockPos.x.toDouble() - mc.renderManager.viewerPosX
+        val y = blockPos.y.toDouble() - mc.renderManager.viewerPosY
+        val z = blockPos.z.toDouble() - mc.renderManager.viewerPosZ
+
+        if (player.isSneaking) {
+            drawLineBetter(player.posX - mc.renderManager.viewerPosX, player.posY + 1.54 - mc.renderManager.viewerPosY, player.posZ - mc.renderManager.viewerPosZ, x, y, z, color.x, color.y, color.z, alpha, lineWidth)
+        } else {
+            drawLineBetter(player.posX - mc.renderManager.viewerPosX, player.posY + 1.62 - mc.renderManager.viewerPosY, player.posZ - mc.renderManager.viewerPosZ, x, y, z, color.x, color.y, color.z, alpha, lineWidth)
+        }
+
+    }
+
+    fun drawLineBetter(x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double, red: Float, green: Float, blue: Float, alpha: Float, lineWidth: Float = 1f) {
+        val tessellator = Tessellator.getInstance()
+        val worldRenderer = tessellator.worldRenderer
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_BLEND)
+        glLineWidth(lineWidth)
+        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_DEPTH_TEST)
+        glDepthMask(false)
+        pushMatrix()
+
+        worldRenderer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR)
+        worldRenderer.pos(x1, y1, z1).color(red, green, blue, alpha).endVertex()
+        worldRenderer.pos(x2, y2, z2).color(red, green, blue, alpha).endVertex()
+        tessellator.draw()
+
+        popMatrix()
+        glEnable(GL_TEXTURE_2D)
+        glEnable(GL_DEPTH_TEST)
+        glDepthMask(true)
+        glDisable(GL_BLEND)
+    }
+
+
+    private fun preDraw(disableTexture2D: Boolean = true) {
+        GlStateManager.enableAlpha()
+        GlStateManager.enableBlend()
+        GlStateManager.disableLighting()
+        if (disableTexture2D) GlStateManager.disableTexture2D() else GlStateManager.enableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+    }
+
+    fun depth(depth: Boolean) {
+        if (depth) GlStateManager.enableDepth() else GlStateManager.disableDepth()
+        GlStateManager.depthMask(depth)
+    }
+
+    private fun postDraw() {
+        GlStateManager.disableBlend()
+        GlStateManager.enableTexture2D()
+        GlStateManager.resetColor()
+    }
+
+    inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
+        block.invoke(this)
+    }
+
+    private fun resetDepth() {
+        GlStateManager.enableDepth()
+        GlStateManager.depthMask(true)
+    }
+
+    fun drawLines(points: Collection<Vec3>, color: Vector3, lineWidth: Float, depth: Boolean) {
+        if (points.size < 2) return
+
+        GlStateManager.pushMatrix()
+        GlStateManager.color(color.x, color.y, color.z)
+        preDraw()
+        depth(depth)
+        glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(lineWidth)
+
+        worldRenderer {
+            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            for (point in points) {
+                pos(point.xCoord, point.yCoord, point.zCoord).endVertex()
+            }
+        }
+        tessellator.draw()
+
+        if (!depth) resetDepth()
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(1f)
+        postDraw()
+        popMatrix()
+    }
+
+    var partialTicks = 0f
+
+    val Entity.renderX: Double
+        get() = prevPosX + (posX - prevPosX ) * partialTicks
+
+    /**
+     * Gets the rendered y-coordinate of an entity based on its last tick and current tick positions.
+     *
+     * @receiver The entity for which to retrieve the rendered y-coordinate.
+     * @return The rendered y-coordinate.
+     */
+    val Entity.renderY: Double
+        get() = prevPosY + (posY - prevPosY) * partialTicks
+
+    /**
+     * Gets the rendered z-coordinate of an entity based on its last tick and current tick positions.
+     *
+     * @receiver The entity for which to retrieve the rendered z-coordinate.
+     * @return The rendered z-coordinate.
+     */
+    val Entity.renderZ: Double
+        get() = prevPosZ + (posZ - prevPosZ) * partialTicks
+
+    /**
+     * Gets the rendered position of an entity as a `Vec3`.
+     *
+     * @receiver The entity for which to retrieve the rendered position.
+     * @return The rendered position as a `Vec3`.
+     */
+    val Entity.renderVec: Vec3
+        get() = Vec3(renderX, renderY, renderZ)
+
+    fun Vec3.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3 =
+        this.addVector(x.toDouble(), y.toDouble(), z.toDouble())
+
+    fun fastEyeHeight(): Float =
+        if (mc.thePlayer?.isSneaking == true) 1.54f else 1.62f
+
+    fun drawTracer(goal: Vec3, color: Vector3, lineWidth: Float = 3f, depth: Boolean = false) {
+        drawLines(listOf(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), goal), color, lineWidth, depth)
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    fun onRenderWorld(event: RenderWorldLastEvent) {
+        this.partialTicks = event.partialTicks
+    }
 
     private fun drawLine(x1: Int, y1: Int, x2: Int, y2: Int) {
         val vec = Vector2f((x2 - x1).toFloat(), (y2 - y1).toFloat())

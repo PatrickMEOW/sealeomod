@@ -22,8 +22,6 @@ abstract class Module(
     val settings: ArrayList<Setting<*>> = ArrayList()
 
     var enabled: Boolean = toggled
-        private set
-
 
 
     init {
