@@ -1,8 +1,8 @@
-package io.github.patrickmeow.sealeo.ui.elements.impl
+package io.github.patrickmeow.sealeo.uiOld.elements.impl
 
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.features.ModuleManager
-import io.github.patrickmeow.sealeo.ui.elements.Element
+import io.github.patrickmeow.sealeo.uiOld.elements.Element
 import io.github.patrickmeow.sealeo.utils.RenderUtils
 import java.awt.Color
 

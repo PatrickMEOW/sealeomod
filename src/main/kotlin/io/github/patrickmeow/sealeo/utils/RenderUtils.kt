@@ -32,6 +32,24 @@ object RenderUtils {
     private val renderManager: RenderManager = mc.renderManager
     val matrix = UMatrixStack.Compat
 
+    fun drawRectangle(x: Float, y: Float, width: Float, height: Float, color: Color) {
+        // Convert the color to RGBA
+        val red = color.red / 255.0f
+        val green = color.green / 255.0f
+        val blue = color.blue / 255.0f
+        val alpha = color.alpha / 255.0f
+
+        // Set the color for drawing
+        GL11.glColor4f(red, green, blue, alpha)
+
+        // Begin drawing the rectangle
+        GL11.glBegin(GL11.GL_QUADS)
+        GL11.glVertex2f(x, y)
+        GL11.glVertex2f(x + width, y)
+        GL11.glVertex2f(x + width, y + height)
+        GL11.glVertex2f(x, y + height)
+        GL11.glEnd()
+    }
 
     fun roundedRectangle(
         x: Number, y: Number, w: Number, h: Number,

@@ -1,11 +1,13 @@
 package io.github.patrickmeow.sealeo.features
 
 import io.github.patrickmeow.sealeo.features.settings.Setting
+import io.github.patrickmeow.sealeo.features.settings.impl.HiddenModule
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C01PacketChatMessage
 import net.minecraft.network.play.server.S28PacketEffect
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
+import kotlin.reflect.full.hasAnnotation
 
 abstract class Module(
     val name: String,
@@ -16,6 +18,8 @@ abstract class Module(
 ) {
 
 
+    @Transient
+    val hidden = this::class.hasAnnotation<HiddenModule>()
 
     val alwaysActive: Boolean = false
 

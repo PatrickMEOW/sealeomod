@@ -3,10 +3,12 @@ package io.github.patrickmeow.sealeo.features.impl.render
 import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
+import io.github.patrickmeow.sealeo.features.settings.impl.HiddenModule
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
-import io.github.patrickmeow.sealeo.ui.ClickGui
+import io.github.patrickmeow.sealeo.uiOld.ClickGui
 import org.lwjgl.input.Keyboard
 
+@HiddenModule
 object ClickGuiModule : Module(
   "Click Gui",
     "Click gui",
@@ -19,7 +21,7 @@ object ClickGuiModule : Module(
     }
 
     override fun onEnable() {
-        if (clickGui == null) {
+        if(clickGui == null) {
             clickGui = ClickGui
         }
         mc.displayGuiScreen(clickGui)

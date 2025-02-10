@@ -30,8 +30,8 @@ object Simulation : Module(
         if (!onSinglePlayer) return
         if (mc.thePlayer == null) return
 
-        mc.thePlayer.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.50000000745)
-        mc.thePlayer.capabilities.setPlayerWalkSpeed(0.50000000745F)
+        mc.thePlayer.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.12000)
+        mc.thePlayer.capabilities.setPlayerWalkSpeed(0.1200F)
 
 
     }

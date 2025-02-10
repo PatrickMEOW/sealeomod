@@ -75,8 +75,10 @@ repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
     // If you don't want to log in with your real minecraft account, remove this line
+
     maven("https://repo.essential.gg/repository/maven-public/")
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
+    maven("https://jitpack.io/")
 }
 
 val shadowImpl: Configuration by configurations.creating {
@@ -91,8 +93,12 @@ dependencies {
     compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("com.google.code.gson:gson:2.8.6")
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
     shadowImpl(kotlin("stdlib-jdk8"))
+    implementation("com.github.Stivais:Commodore:bea320fe0a")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    compileOnly("org.apache.httpcomponents:httpclient:4.5.13")
 
     // If you don't want mixins, remove these lines
     shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") {

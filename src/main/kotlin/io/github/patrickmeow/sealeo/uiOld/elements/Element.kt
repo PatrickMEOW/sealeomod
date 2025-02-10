@@ -1,7 +1,4 @@
-package io.github.patrickmeow.sealeo.ui.elements
-
-import io.github.patrickmeow.sealeo.features.Module
-import io.github.patrickmeow.sealeo.features.settings.Setting
+package io.github.patrickmeow.sealeo.uiOld.elements
 
 open class Element() {
 

@@ -6,6 +6,8 @@ import io.github.patrickmeow.sealeo.events.BlockChangeEvent
 import io.github.patrickmeow.sealeo.events.PacketEvent
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
+import io.github.patrickmeow.sealeo.features.settings.impl.BooleanSetting
+import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
 import io.github.patrickmeow.sealeo.utils.RenderUtils
 import io.github.patrickmeow.sealeo.utils.Vector3
 import net.minecraft.init.Blocks
@@ -15,6 +17,7 @@ import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.input.Keyboard
 import kotlin.math.sqrt
 
 object RiftHelper : Module(
@@ -24,10 +27,12 @@ object RiftHelper : Module(
 ) {
 
     val spawnedBerberis = mutableListOf<BlockPos>()
-
+    var renderNext by BooleanSetting("Render next", "Renders next")
+    var renderEnable by KeybindSetting("xd", "xd", Keyboard.KEY_H).onPress {
+        renderNext = true
+    }
     @SubscribeEvent
     fun onParticle(event: PacketEvent.PacketReceiveEvent) {
-
         if(event.packet !is S2APacketParticles) return
         println(event.packet.particleType.toString())
         if(event.packet.particleType == EnumParticleTypes.FIREWORKS_SPARK) return
@@ -45,6 +50,7 @@ object RiftHelper : Module(
 
         if(event.update.block == Blocks.air && event.old.block == Blocks.deadbush) {
             spawnedBerberis.remove(event.pos)
+            println("removed")
         }
 
     }

@@ -26,6 +26,8 @@ import kotlin.math.abs
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import gg.essential.universal.UMatrixStack
+import net.minecraft.init.Blocks
+import net.minecraft.item.ItemStack
 import net.minecraftforge.event.world.WorldEvent
 import java.awt.Color
 import java.io.File
@@ -123,10 +125,18 @@ object Blink : Module(
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
+
+
+
+
         val fontRenderer = mc.fontRendererObj
         if(event.type != RenderGameOverlayEvent.ElementType.ALL) return
         val screenWidth = event.resolution.scaledWidth
         val screenHeight = event.resolution.scaledHeight
+        val itemStack = mc.thePlayer?.inventory?.mainInventory!![0]
+        //println(itemStack?.item?.registryName.toString())
+        mc.renderItem?.renderItemAndEffectIntoGUI(itemStack, 300, 300)
+
         if (isRecording) {
             fontRenderer?.drawString("Recording", 10, 400, -1)
         }
