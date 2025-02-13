@@ -4,6 +4,7 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.universal.shader.UShader
 import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.SealeoMod
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting
@@ -21,8 +22,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.glu.Cylinder
+import org.lwjgl.util.vector.Matrix4f
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.Rectangle
+import java.nio.FloatBuffer
 
 object RenderUtils {
 
@@ -31,6 +36,25 @@ object RenderUtils {
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val renderManager: RenderManager = mc.renderManager
     val matrix = UMatrixStack.Compat
+
+
+    private var graphics2D: Graphics2D? = null
+
+    fun setGraphics2D(g2d: Graphics2D) {
+        graphics2D = g2d
+    }
+
+    fun setClip(x: Int, y: Int, width: Int, height: Int) {
+        graphics2D?.clip = Rectangle(x, y, width, height)
+    }
+
+    fun resetClip() {
+        graphics2D?.clip = null
+    }
+    fun measureTextWidth(text: String, scale: Float): Float {
+        val fontRenderer = Minecraft.getMinecraft().fontRendererObj
+        return fontRenderer.getStringWidth(text) * scale
+    }
 
     fun drawRectangle(x: Float, y: Float, width: Float, height: Float, color: Color) {
         // Convert the color to RGBA

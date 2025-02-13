@@ -7,6 +7,7 @@ import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.features.ModuleManager.rotateSmoothlyTo
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
+import io.github.patrickmeow.sealeo.features.settings.impl.NumberSetting
 import io.github.patrickmeow.sealeo.utils.calcYawAndPitch
 import io.github.patrickmeow.sealeo.utils.leftClick
 import io.github.patrickmeow.sealeo.utils.rotateTo
@@ -16,6 +17,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ChatComponentText
+import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -36,9 +38,12 @@ object BerberisMacro : Module(
     var targetPitch: Float = 0.0f
     var isRotating = false
 
+
     val spawnBerberis by KeybindSetting("Spawns", "spawns", Keyboard.KEY_N).onPress {
         spawnDeadBushes()
     }
+
+    private val rotationSpeed by NumberSetting("Rotation speed", "Rotation speed", 2f, 1f, 10f, 0.5f)
 
     private fun spawnDeadBushes() {
         val player = mc.thePlayer ?: return
@@ -62,11 +67,17 @@ object BerberisMacro : Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if(spawnedBerberis.size < 1) return
         if(mc.thePlayer == null) return
+        val blockUnder = mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX.toInt(), (mc.thePlayer.posY -1).toInt(), mc.thePlayer.posZ.toInt()))
+        if(blockUnder.block == Blocks.bedrock) return
+        if(spawnedBerberis.size < 1) return
+
+
         //nearBerberis = false
         val playerPos = mc.thePlayer?.position
         val positions = BlockPos.getAllInBox(playerPos?.add(10, 0, 10), playerPos?.add(-10, 0, -10))
+
+
 
         for(position in positions) {
             val blockState = mc.theWorld.getBlockState(position)
@@ -77,8 +88,19 @@ object BerberisMacro : Module(
         val target = calcYawAndPitch(spawnedBerberis[0], 0.5)
 
         //rotateTo(mc.thePlayer.rotationYaw + 0.1f, mc.thePlayer.rotationPitch)
-        if(nearBerberis) rotateSmoothlyTo(target.y, target.z)
+
+
+        // Teleport check
+
+
+
+        if(nearBerberis) rotateSmoothlyTo(target.y, target.z, rotationSpeed.toFloat())
         if(target.x <= 4.5) {
+
+            // Player check
+            val movingObjectPosition = mc.objectMouseOver
+            if(movingObjectPosition.typeOfHit == MovingObjectType.ENTITY) return
+
             leftClick()
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.keyCode, false)
             //KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, false)
@@ -86,8 +108,6 @@ object BerberisMacro : Module(
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.keyCode, true)
             //KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, true)
         }
-
-
     }
 
 

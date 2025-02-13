@@ -17,7 +17,7 @@ object ClickGui : GuiScreen() {
     private var width: Float = 525f
     private var height: Float = 320f
     private var selectedCategory: Category? = null
-    private var sc: ScaledResolution? = null
+    var sc: ScaledResolution? = null
     private val COLOR: Int = 0xFF444444.toInt()
     private var searchString: String = "Search.."
     private var rectColor: Color = Color(30, 31, 40)

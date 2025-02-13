@@ -1,23 +1,25 @@
 package io.github.patrickmeow.sealeo.uiOld.elements.impl
 
+import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.features.ModuleManager.modules
+import io.github.patrickmeow.sealeo.uiOld.ClickGui
 import io.github.patrickmeow.sealeo.uiOld.elements.Element
 import io.github.patrickmeow.sealeo.utils.RenderUtils
-import io.github.patrickmeow.sealeo.utils.SealeoFont
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
 import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.GL11
 
 class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
 
     private val moduleButtons = ArrayList<ToggleButton>()
     private var previousCategory: Category? = null
     private var scrollOffsetY = 0f
-    private val scrollSpeed = 20f
+    private val scrollSpeed = 15f
     private var settingsOpened = false
     private lateinit var settingsTab: SettingsPanel
     private lateinit var searchButton: SearchButton
@@ -25,60 +27,66 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
     init {
         searchButton = SearchButton()
     }
+
     override fun draw(mouseX: Int, mouseY: Int) {
         super.draw(mouseX, mouseY)
-        if(settingsOpened) {
-            settingsTab.draw(mouseX, mouseY)
 
-        } else {
-            // Check if the category has changed
-            if (previousCategory != categoriesElement.selectedCategory) {
-                moduleButtons.clear()
-                previousCategory = categoriesElement.selectedCategory
-                scrollOffsetY = 0f
-            }
+        // Handle scrolling
+        handleScrolling()
 
-            // Handle scrolling
-            handleScrolling()
+        var offsetY = scrollOffsetY
+        var color = Color(33, 35, 44)
+        searchButton.draw(mouseX, mouseY)
+        // Set up the scissor box to only render within the ClickGUI box
+        val scissorX = 370f
+        val scissorY = 150f
+        val scissorWidth = 300f
+        val scissorHeight = 262f
 
-            var offsetY = scrollOffsetY
-            var color = Color(33, 35, 44)
-            searchButton.draw(mouseX, mouseY)
+        // Enable scissor testing
 
-            // Shadow
-            //RenderUtils.roundedRectangle(352f, 132f, 334f, 254f, Color(28, 28, 35), 6f, .1f)
-            //RenderUtils.roundedRectangle(356f, 136f, 328f, 250f, Color(30, 33, 41), 6f, .1f)
+        RenderUtils.drawRectangle()
 
-            for (module in modules) {
-                if(module.hidden) continue
-                if (module.category == categoriesElement.selectedCategory) {
-                    //TODO: Hide modules that are outside of the box
-                    if (offsetY >= -60f && offsetY <= 250f) {
-                        if(isMouseOver(mouseX, mouseY, 370f, 140f + offsetY, 300f, 40f)) {
-                            color = Color(37,40,51)
-                        } else {
-                            color = Color(33, 35, 44)
-                        }
-                        RenderUtils.roundedRectangle(370f, 140f + offsetY, 300f, 40f, color, 6f, 0.1f)
-                        RenderUtils.drawText(module.name, 380f, 150f + offsetY, -1, 1.35f)
-                        RenderUtils.drawText(module.description, 380f, 165f + offsetY, 0xFF5b5b5b.toInt(), 1f)
-                        //SealeoFont.text24(module.name, 380f, 150f + offsetY, 1f, Color.WHITE)
-                        //SealeoFont.text20(module.description, 380f, 165f + offsetY, 1f, Color.GRAY)
-                        val button = ToggleButton(580f, 151f + offsetY, module, false)
-                        button.updatePosition(580f, 151f + offsetY)
-                        if (!moduleButtons.contains(button)) {
-                            moduleButtons.add(button)
-                        } else {
-                            moduleButtons.find { it.parent == module }?.updatePosition(580f, 151f + offsetY)
-                        }
+        GL11.glEnable(GL11.GL_SCISSOR_TEST)
+        GL11.glScissor(
+            (scissorX.toInt() * mc.displayWidth / ClickGui.sc!!.scaledWidth),
+            ((mc.displayHeight - (scissorY.toInt() + scissorHeight) * mc.displayHeight / ClickGui.sc!!.scaledHeight).toInt()),
+            (scissorWidth.toInt() * mc.displayWidth / ClickGui.sc!!.scaledWidth),
+            (scissorHeight.toInt() * mc.displayHeight / ClickGui.sc!!.scaledHeight)
+        )
 
-                        button.draw()
+        for (module in modules) {
+            if (module.hidden) continue
+            if (module.category == categoriesElement.selectedCategory) {
+                if (offsetY >= -600f && offsetY <= 2500f) {
+                    if (isMouseOver(mouseX, mouseY, 370f, 150f + offsetY, 300f, 40f)) {
+                        color = Color(37, 40, 51)
+                    } else {
+                        color = Color(33, 35, 44)
                     }
-                    offsetY += 60f
+                    RenderUtils.roundedRectangle(370f, 150f + offsetY, 300f, 40f, color, 6f, 0.1f)
+                    RenderUtils.drawText(module.name, 380f, 160f + offsetY, -1, 1.35f)
+                    RenderUtils.drawText(module.description, 380f, 175f + offsetY, 0xFF5b5b5b.toInt(), 1f)
+                    val button = ToggleButton(580f, 161f + offsetY, module, false)
+                    button.updatePosition(580f, 161f + offsetY)
+                    if (!moduleButtons.contains(button)) {
+                        moduleButtons.add(button)
+                    } else {
+                        moduleButtons.find { it.parent == module }?.updatePosition(580f, 151f + offsetY)
+                    }
+
+                    button.draw()
                 }
+                offsetY += 50f
             }
         }
 
+        // Disable scissor testing
+        GL11.glDisable(GL11.GL_SCISSOR_TEST)
+
+        if (settingsOpened) {
+            settingsTab.draw(mouseX, mouseY)
+        }
     }
 
     private fun handleScrolling() {
@@ -98,6 +106,10 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int) {
         super.mouseClicked(mouseX, mouseY)
+        if (settingsOpened) {
+            settingsTab.mouseClicked(mouseX, mouseY)
+            return
+        }
         for (button in moduleButtons) {
             if (button.isMouseOver(mouseX, mouseY)) {
                 button.onClick(mouseX, mouseY)
@@ -109,16 +121,16 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
             scrollOffsetY = 0f
         }
         var offsetY = scrollOffsetY
-        for(module in modules) {
-            if(module.hidden) continue
-            if(module.category == categoriesElement.selectedCategory) {
-                if(isMouseOver(mouseX, mouseY, 370f, 140f + offsetY, 300f, 40f)) {
+        for (module in modules) {
+            if (module.hidden) continue
+            if (module.category == categoriesElement.selectedCategory) {
+                if (isMouseOver(mouseX, mouseY, 370f, 140f + offsetY, 300f, 40f)) {
                     println("Clicked ${module.name}")
                     settingsTab = SettingsPanel(module, this)
                     settingsOpened = true
                     settingsTab.startAnimation()
                 }
-                offsetY += 60f
+                offsetY += 50f
             }
         }
     }
@@ -192,6 +204,18 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
             if (this === other) return true
             if (other !is ToggleButton) return false
             return parent.name == other.parent.name
+        }
+
+        override fun hashCode(): Int {
+            var result = x.hashCode()
+            result = 31 * result + y.hashCode()
+            result = 31 * result + parent.hashCode()
+            result = 31 * result + isAnimating.hashCode()
+            result = 31 * result + animationStartTime.hashCode()
+            result = 31 * result + MAX_INCREMENT
+            result = 31 * result + ANIMATION_DURATION
+            result = 31 * result + increment
+            return result
         }
     }
 }

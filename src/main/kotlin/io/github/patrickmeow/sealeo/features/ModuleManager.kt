@@ -14,6 +14,8 @@ import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import kotlin.math.abs
+import kotlin.math.sign
 
 object ModuleManager {
 
@@ -26,6 +28,7 @@ object ModuleManager {
     var targetYaw = 0.0f
     var targetPitch = 0.0f
     var isRotating = false
+    var rotationSpeed: Float = 3f
 
     fun getModule(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
@@ -67,10 +70,11 @@ object ModuleManager {
         messageFunctions.add(MessageFunction(message, func))
     }
 
-    fun rotateSmoothlyTo(yaw: Float, pitch: Float) {
+    fun rotateSmoothlyTo(yaw: Float, pitch: Float, rotationSpeed: Float) {
         isRotating = true
         targetYaw = yaw
         targetPitch = pitch
+        this.rotationSpeed = rotationSpeed
     }
 
     @SubscribeEvent
@@ -83,13 +87,13 @@ object ModuleManager {
 
             if (currentYaw != targetYaw) {
                 val yawDifference = targetYaw - currentYaw
-                val yawChange = if (Math.abs(yawDifference) < 3f) yawDifference else 3f * Math.signum(yawDifference)
+                val yawChange = if (abs(yawDifference) < rotationSpeed) yawDifference else rotationSpeed * sign(yawDifference)
                 mc.thePlayer.rotationYaw += yawChange
             }
 
             if (currentPitch != targetPitch) {
                 val pitchDifference = targetPitch - currentPitch
-                val pitchChange = if (Math.abs(pitchDifference) < 3f) pitchDifference else 3f * Math.signum(pitchDifference)
+                val pitchChange = if (abs(pitchDifference) < rotationSpeed) pitchDifference else rotationSpeed * sign(pitchDifference)
                 mc.thePlayer.rotationPitch += pitchChange
             }
 
