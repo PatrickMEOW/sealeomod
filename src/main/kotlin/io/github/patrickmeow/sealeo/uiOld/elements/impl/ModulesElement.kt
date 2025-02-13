@@ -45,7 +45,7 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
 
         // Enable scissor testing
 
-        RenderUtils.drawRectangle()
+
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
         GL11.glScissor(
