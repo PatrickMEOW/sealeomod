@@ -24,7 +24,7 @@ object ModuleManager {
 
     val messageFunctions = mutableListOf<MessageFunction>()
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
-    val modules: ArrayList<Module> = arrayListOf(ToggleSprint, SlotBinding, Simulation, ClickGuiModule, RiftHelper, MobESP, AutoTNT, HitColor, BerberisMacro)
+    val modules: ArrayList<Module> = arrayListOf(ToggleSprint, SlotBinding, Simulation, ClickGuiModule, RiftHelper, MobESP, AutoTNT, HitColor, BerberisMacro, Blink)
     var targetYaw = 0.0f
     var targetPitch = 0.0f
     var isRotating = false

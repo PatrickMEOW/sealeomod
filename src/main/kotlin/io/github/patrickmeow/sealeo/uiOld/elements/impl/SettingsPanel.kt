@@ -37,9 +37,7 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
 
         RenderUtils.roundedRectangle(currentX, ClickGui.y, currentPanelWidth, 320f, color, color, color, 0f, 0f, 8f, 0f, 8f, 0.1f)
 
-        // Enable scissor testing
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
-        // Set the scissor box to the bounds of the panel
         GL11.glScissor(
             (currentX.toInt() * mc.displayWidth / ClickGui.sc!!.scaledWidth),
             (mc.displayHeight - (ClickGui.y.toInt() + 320) * mc.displayHeight / ClickGui.sc!!.scaledHeight),
@@ -47,7 +45,6 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
             (320 * mc.displayHeight / ClickGui.sc!!.scaledHeight)
         )
 
-        // Draw the text within the scissor box
         RenderUtils.drawText(moduleText, currentX + moduleTextPosX, ClickGui.y + 20f, -1, 1.5f)
 
         for (setting in module.settings) {
@@ -87,16 +84,12 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
         // Get the current time
         val elapsedTime = System.currentTimeMillis() - animationStartTime
 
-        // Calculate the progress (normalized value between 0 and 1)
         val progress = (elapsedTime.toFloat() / ANIMATION_DURATION).coerceIn(0f, 1f)
 
-        // Calculate the new width based on the progress
         currentPanelWidth = initialPanelWidth + progress * (finalPanelWidth - initialPanelWidth)
 
-        // Calculate the new position based on the new width
         currentX = targetX + finalPanelWidth - currentPanelWidth
 
-        // If the animation is complete, stop animating
         if (progress >= 1f) {
             animating = false
             currentX = targetX
@@ -104,7 +97,6 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
         }
     }
 
-    // Call this function to start the animation
     fun startAnimation() {
         animating = true
         animationStartTime = System.currentTimeMillis()

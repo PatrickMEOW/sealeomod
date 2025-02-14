@@ -37,16 +37,13 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
         var offsetY = scrollOffsetY
         var color = Color(33, 35, 44)
         searchButton.draw(mouseX, mouseY)
-        // Set up the scissor box to only render within the ClickGUI box
+
         val scissorX = 370f
         val scissorY = 150f
         val scissorWidth = 300f
         val scissorHeight = 262f
 
         // Enable scissor testing
-
-
-
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
         GL11.glScissor(
             (scissorX.toInt() * mc.displayWidth / ClickGui.sc!!.scaledWidth),
@@ -65,6 +62,7 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
                         color = Color(33, 35, 44)
                     }
                     RenderUtils.roundedRectangle(370f, 150f + offsetY, 300f, 40f, color, 6f, 0.1f)
+                    println(offsetY)
                     RenderUtils.drawText(module.name, 380f, 160f + offsetY, -1, 1.35f)
                     RenderUtils.drawText(module.description, 380f, 175f + offsetY, 0xFF5b5b5b.toInt(), 1f)
                     val button = ToggleButton(580f, 161f + offsetY, module, false)
@@ -95,13 +93,20 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
             val direction = if (wheel > 0) 1 else -1
             scrollOffsetY += direction * scrollSpeed
             scrollOffsetY = clampScrollOffset(scrollOffsetY)
+
+            val totalHeight = modules.count { it.category == categoriesElement.selectedCategory } * 50f
+            val viewHeight = 262f
+            val maxScroll = max(0f, totalHeight - viewHeight)
+            scrollOffsetY = max(viewHeight - totalHeight, scrollOffsetY)
+            scrollOffsetY = min(0f, scrollOffsetY)
         }
     }
 
     private fun clampScrollOffset(offsetY: Float): Float {
-        val totalHeight = modules.count { it.category == categoriesElement.selectedCategory } * 80f
-        val maxScroll = Math.max(0f, totalHeight - 250f)
-        return Math.max(-maxScroll, Math.min(0f, offsetY))
+        val totalHeight = modules.count { it.category == categoriesElement.selectedCategory } * 50f
+        val viewHeight = 262f
+        val maxScroll = max(0f, totalHeight - viewHeight)
+        return max(viewHeight - totalHeight, min(0f, offsetY))
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int) {
@@ -118,7 +123,6 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
         if (previousCategory != categoriesElement.selectedCategory) {
             moduleButtons.clear()
             previousCategory = categoriesElement.selectedCategory
-            scrollOffsetY = 0f
         }
         var offsetY = scrollOffsetY
         for (module in modules) {

@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent
 object Simulation : Module(
     "Simulation",
     "Simulates 500 speed and lava bounce",
-    Category.MOVEMENT
+    Category.SKYBLOCK
 ) {
 
     private var onSinglePlayer = false
