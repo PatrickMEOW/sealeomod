@@ -14,11 +14,11 @@ class SearchButton() : Element() {
     private var showUnderscore: Boolean = true
     private var lastToggleTime: Long = System.currentTimeMillis()
     private val TOGGLE_INTERVAL: Long = 500 // 500ms for flickering effect
-    private val x = 650f
+    private val x = 600f
     private val y = 100f
-    private val width = 80f
-    private val height = 20f
-    val color = Color(30,33,41)
+    private val width = 120f
+    private val height = 25f
+    val color = Color(33, 35, 44)
 
 
     override fun draw(mouseX: Int, mouseY: Int) {
@@ -28,7 +28,7 @@ class SearchButton() : Element() {
         //RenderUtils.drawText(displayText, (x + 5).toInt(), (y + 7).toInt(), 0xFF687076.toInt(), 1F)
 
         RenderUtils.roundedRectangle(x, y, width, height, color, 6f, 0.1f)
-        RenderUtils.drawText(displayText, x + 10f, y + 5f, 0xFF687076.toInt(), 1f)
+        RenderUtils.drawText(displayText, x + 10f, y + 5f, 0xFF687076, 1f)
     }
 
     private fun updateUnderscore() {
@@ -45,6 +45,7 @@ class SearchButton() : Element() {
             if (searchString == "Search..") {
                 searchString = ""
                 isSearching = true
+                println("searching")
             } else if (!isSearching) {
                 isSearching = true
             }
@@ -56,33 +57,27 @@ class SearchButton() : Element() {
     }
 
 
-    fun keyTyped(keyCode: Int, typedChar: Char) {
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (!isSearching) return
 
-        println(keyCode)
-
+        // Handle backspace
         if (keyCode == 14) { // Backspace
-            if (searchString.isEmpty()) {
-                // processSearch()
-                return
-            } else {
+            if (searchString.isNotEmpty()) {
                 searchString = searchString.substring(0, searchString.length - 1)
                 processSearch()
-                return
             }
-        }
-
-        if (searchString.length == 13) {
             return
         }
 
-        if (searchString == "Search..") {
-            searchString = ""
+        // Check if the entered character is valid
+        if (typedChar.isLetterOrDigit() || typedChar.isWhitespace()) {
+            searchString += typedChar
+            println(typedChar)
+            println(searchString)
+            processSearch()
         }
-
-        searchString += typedChar
-        processSearch()
     }
+
 
 
 

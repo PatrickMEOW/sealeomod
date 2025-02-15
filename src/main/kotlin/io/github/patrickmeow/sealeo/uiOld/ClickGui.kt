@@ -31,7 +31,6 @@ object ClickGui : GuiScreen() {
     // Elements
     private lateinit var categories: CategoriesElement
     private lateinit var modulesElement: ModulesElement
-    private lateinit var searchButton: SearchButton
 
 
     init {
@@ -48,8 +47,6 @@ object ClickGui : GuiScreen() {
         searchString = "Search.."
         categories = CategoriesElement()
         modulesElement = ModulesElement(categories)
-        searchButton = SearchButton()
-
         sc = ScaledResolution(mc)
         x = ((sc!!.scaledWidth - width) / 2).toFloat()
         y = ((sc!!.scaledHeight - height) / 2).toFloat()
@@ -77,14 +74,14 @@ object ClickGui : GuiScreen() {
 
         RenderUtils.roundedRectangle(x, y, width, height, rectColor, 8f)
         RenderUtils.roundedRectangle(x, y, 135f, height, sideColor, sideColor, sideColor, 0f, 8f, 0f, 8f, 0f, 0.1f)
-        RenderUtils.drawText("Sealeo", x + 10, y + 10, 0xFF5A94DE.toInt(), 2.5f)
+        RenderUtils.drawText("Sealeo", x + 10, y + 10, 0xFF5A94DE, 2.5f)
         RenderUtils.drawText("by Patrick", x + 24, y + 29, -0xc0c879, 1.35f)
 
 
 
         categories.draw(mouseX, mouseY)
         modulesElement.draw(mouseX, mouseY)
-        //searchButton.draw(mouseX, mouseY)
+
         GL11.glPopAttrib()
         GL11.glPopMatrix()
     }
@@ -93,14 +90,20 @@ object ClickGui : GuiScreen() {
 
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        super.mouseClicked(mouseX, mouseY, mouseButton)
+
         categories.mouseClicked(mouseX, mouseY)
-        searchButton.mouseClicked(mouseX, mouseY)
         modulesElement.mouseClicked(mouseX, mouseY)
+        super.mouseClicked(mouseX, mouseY, mouseButton)
     }
+
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        super.mouseReleased(mouseX, mouseY, state)
+        modulesElement.onRelease(mouseX, mouseY)
+    }
+
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         super.keyTyped(typedChar, keyCode)
-        searchButton.keyTyped(keyCode, typedChar)
+        modulesElement.keyTyped(typedChar, keyCode)
     }
 }

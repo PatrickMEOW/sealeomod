@@ -520,17 +520,11 @@ object RenderUtils {
         SealeoMod::class.java.getResource("/shaders/source/$name.$ext")?.readText() ?: ""
 
 
-    fun drawText(text: String, x: Float, y: Float, color: Int, scaleText: Float) {
-        glPushMatrix()
-        glScalef(scaleText, scaleText, scaleText)
+    fun drawText(text: String, x: Float, y: Float, color: Long, scaleText: Float) {
 
-        val adjustedX = (x / scaleText).toInt()
-        val adjustedY = (y / scaleText).toInt()
 
-       mc.fontRendererObj.drawStringWithShadow(text, adjustedX.toFloat(), adjustedY.toFloat(), color)
-
-        glPopMatrix()
-        color(1.0F, 1.0F, 1.0F, 1.0F) // Reset color state
+       //mc.fontRendererObj.drawStringWithShadow(text, adjustedX.toFloat(), adjustedY.toFloat(), color)
+        SealeoFont.text(text, x, y, color, false, (scaleText * 18).toInt())
     }
 
 }

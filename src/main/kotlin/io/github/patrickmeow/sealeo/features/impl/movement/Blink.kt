@@ -38,7 +38,7 @@ import java.lang.reflect.Type
 object Blink : Module(
     "Blink",
     "Performs blink in p3",
-    Category.SKYBLOCK
+    Category.RENDER
 ) {
 
     // TODO - hardcode routes for relics, add reading routes from json file

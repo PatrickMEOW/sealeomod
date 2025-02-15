@@ -7,6 +7,7 @@ import io.github.patrickmeow.sealeo.features.ModuleManager.modules
 import io.github.patrickmeow.sealeo.uiOld.ClickGui
 import io.github.patrickmeow.sealeo.uiOld.elements.Element
 import io.github.patrickmeow.sealeo.utils.RenderUtils
+import io.github.patrickmeow.sealeo.utils.SealeoFont
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
@@ -17,11 +18,11 @@ import org.lwjgl.opengl.GL11
 class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
 
     private val moduleButtons = ArrayList<ToggleButton>()
-    private var previousCategory: Category? = null
+    private var previousCategory: Category = Category.SKYBLOCK
     private var scrollOffsetY = 0f
     private val scrollSpeed = 15f
     private var settingsOpened = false
-    private lateinit var settingsTab: SettingsPanel
+    private var settingsTab: SettingsPanel? = null
     private lateinit var searchButton: SearchButton
 
     init {
@@ -30,11 +31,11 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
 
     override fun draw(mouseX: Int, mouseY: Int) {
         super.draw(mouseX, mouseY)
-
+        //println(categoriesElement.selectedCategory.toString())
         // Handle scrolling
         handleScrolling()
-
         var offsetY = scrollOffsetY
+
         var color = Color(33, 35, 44)
         searchButton.draw(mouseX, mouseY)
 
@@ -62,28 +63,31 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
                         color = Color(33, 35, 44)
                     }
                     RenderUtils.roundedRectangle(370f, 150f + offsetY, 300f, 40f, color, 6f, 0.1f)
-                    println(offsetY)
-                    RenderUtils.drawText(module.name, 380f, 160f + offsetY, -1, 1.35f)
-                    RenderUtils.drawText(module.description, 380f, 175f + offsetY, 0xFF5b5b5b.toInt(), 1f)
+                    RenderUtils.drawText(module.name, 380f, 158f + offsetY, -1, 1.4f)
+                    //SealeoFont.text(module.name, 380f, 160f + offsetY, 0xFFFFFFFF, false, 24)
+                    RenderUtils.drawText(module.description, 380f, 175f + offsetY, 0xFF5b5b5b, 1f)
                     val button = ToggleButton(580f, 161f + offsetY, module, false)
                     button.updatePosition(580f, 161f + offsetY)
                     if (!moduleButtons.contains(button)) {
                         moduleButtons.add(button)
                     } else {
-                        moduleButtons.find { it.parent == module }?.updatePosition(580f, 151f + offsetY)
+                        moduleButtons.find { it.parent == module }?.updatePosition(580f, 161f + offsetY)
                     }
 
-                    button.draw()
+                    //button.draw()
                 }
                 offsetY += 50f
             }
+        }
+        for(button in moduleButtons) {
+            button.draw()
         }
 
         // Disable scissor testing
         GL11.glDisable(GL11.GL_SCISSOR_TEST)
 
-        if (settingsOpened) {
-            settingsTab.draw(mouseX, mouseY)
+        if (settingsTab?.settingsOpened == true) {
+            settingsTab?.draw(mouseX, mouseY)
         }
     }
 
@@ -93,7 +97,6 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
             val direction = if (wheel > 0) 1 else -1
             scrollOffsetY += direction * scrollSpeed
             scrollOffsetY = clampScrollOffset(scrollOffsetY)
-
             val totalHeight = modules.count { it.category == categoriesElement.selectedCategory } * 50f
             val viewHeight = 262f
             val maxScroll = max(0f, totalHeight - viewHeight)
@@ -111,33 +114,51 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int) {
         super.mouseClicked(mouseX, mouseY)
-        if (settingsOpened) {
-            settingsTab.mouseClicked(mouseX, mouseY)
+        if (settingsTab?.settingsOpened == true) {
+            settingsTab?.mouseClicked(mouseX, mouseY)
             return
         }
+
+        searchButton.mouseClicked(mouseX, mouseY)
+
+        // Check if the click is within any toggle button
         for (button in moduleButtons) {
             if (button.isMouseOver(mouseX, mouseY)) {
                 button.onClick(mouseX, mouseY)
+                return // Skip the module click handling
             }
         }
+
+        var offsetY = scrollOffsetY
         if (previousCategory != categoriesElement.selectedCategory) {
+            println("resetting offset")
             moduleButtons.clear()
+            scrollOffsetY = 0f
             previousCategory = categoriesElement.selectedCategory
         }
-        var offsetY = scrollOffsetY
+
         for (module in modules) {
             if (module.hidden) continue
             if (module.category == categoriesElement.selectedCategory) {
                 if (isMouseOver(mouseX, mouseY, 370f, 140f + offsetY, 300f, 40f)) {
+                    println("$mouseX $mouseY")
                     println("Clicked ${module.name}")
                     settingsTab = SettingsPanel(module, this)
-                    settingsOpened = true
-                    settingsTab.startAnimation()
+                    //settingsOpened = true
+                    settingsTab?.startAnimation()
                 }
                 offsetY += 50f
             }
         }
     }
+
+    override fun onRelease(mouseX: Int, mouseY: Int) {
+        super.onRelease(mouseX, mouseY)
+        if(settingsTab?.settingsOpened == true) {
+            settingsTab?.onRelease(mouseX, mouseY)
+        }
+    }
+
 
     class ToggleButton(var x: Float, var y: Float, var parent: Module, var isAnimating: Boolean) {
 
@@ -174,6 +195,8 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
                 isAnimating = false
                 increment = if (parent.enabled) MAX_INCREMENT else 0
             }
+
+            println("Animation progress: $increment, Elapsed time: $elapsedTime")
         }
 
         fun draw() {
@@ -201,7 +224,7 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
         }
 
         fun isMouseOver(mouseX: Int, mouseY: Int): Boolean {
-            return (mouseX >= x && mouseX <= x + 35f) && (mouseY >= y && mouseY <= y + 18f)
+            return (mouseX >= x && mouseX <= x + 60f) && (mouseY >= y && mouseY <= y + 18f)
         }
 
         override fun equals(other: Any?): Boolean {
@@ -221,5 +244,11 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
             result = 31 * result + increment
             return result
         }
+    }
+
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        super.keyTyped(typedChar, keyCode)
+        searchButton.keyTyped(typedChar, keyCode)
     }
 }

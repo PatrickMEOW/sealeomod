@@ -11,6 +11,7 @@ class CategoriesElement : Element() {
     private var rectColor: Color = Color(33, 35, 44)
 
     override fun draw(mouseX: Int, mouseY: Int) {
+        super.draw(mouseX, mouseY)
         var color: Color
         val backgroundColor = Color(28, 28, 35)
         var offsetY = 0f
@@ -31,9 +32,7 @@ class CategoriesElement : Element() {
 
                 RenderUtils.roundedRectangle(230f, 152f + offsetY, 105f, 25f, color, 6f, 0.1f)
             }
-
-
-            RenderUtils.drawText(category.getFormattedName(), 245f, 160f + offsetY, -1, 1f)
+            RenderUtils.drawText(category.getFormattedName(), 245f, 156f + offsetY, -1, 1f)
 
             offsetY += 40f
         }
