@@ -6,6 +6,7 @@ import io.github.patrickmeow.sealeo.events.PacketEvent.PacketReceiveEvent
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.features.ModuleManager.rotateSmoothlyTo
+import io.github.patrickmeow.sealeo.features.settings.impl.BooleanSetting
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
 import io.github.patrickmeow.sealeo.features.settings.impl.NumberSetting
 import io.github.patrickmeow.sealeo.utils.calcYawAndPitch
@@ -43,7 +44,8 @@ object BerberisMacro : Module(
         spawnDeadBushes()
     }
 
-    private val rotationSpeed by NumberSetting("Rotation speed", "Rotation speed", 2f, 1f, 10f, 0.5f)
+    private val rotationSpeed by NumberSetting("Rotation speed", "Rotation speed", 2f, 1f, 10f, 0.2f)
+    private val antiTp by BooleanSetting("Anti teleport", "Prevents banning after tp")
 
     private fun spawnDeadBushes() {
         val player = mc.thePlayer ?: return

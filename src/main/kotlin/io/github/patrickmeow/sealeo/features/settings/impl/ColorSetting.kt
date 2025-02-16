@@ -1,35 +1,36 @@
 package io.github.patrickmeow.sealeo.features.settings.impl
 
 import io.github.patrickmeow.sealeo.features.settings.Setting
+import io.github.patrickmeow.sealeo.utils.HSBColor
 import java.awt.Color
 
 class ColorSetting(
     name: String,
     description: String,
-    val color: Color, override var value: Color
-) : Setting<Color>(name, description) {
+    override var value: HSBColor
+) : Setting<HSBColor>(name, description) {
 
-    var red: Int
-        get() = value.red
+    var hue: Float
+        get() = value.hue
         set(value) {
-            this.value = Color(value.coerceIn(0, 255), this.value.green, this.value.blue, this.value.alpha)
+            this.value.hue = value.coerceIn(0f, 1f)
         }
 
-    var green: Int
-        get() = value.green
+    var saturation: Float
+        get() = value.saturation
         set(value) {
-            this.value = Color(this.value.red, value.coerceIn(0, 255), this.value.blue, this.value.alpha)
+            this.value.saturation = value.coerceIn(0f, 1f)
         }
 
-    var blue: Int
-        get() = value.blue
+    var brightness: Float
+        get() = value.brightness
         set(value) {
-            this.value = Color(this.value.red, this.value.green, value.coerceIn(0, 255), this.value.alpha)
+            this.value.brightness = value.coerceIn(0f, 1f)
         }
 
-    var alpha: Int
+    var alpha: Float
         get() = value.alpha
         set(value) {
-            this.value = Color(this.value.red, this.value.green, this.value.blue, value.coerceIn(0, 255))
+            this.value.alpha = value.coerceIn(0f, 1f)
         }
 }

@@ -196,7 +196,6 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
                 increment = if (parent.enabled) MAX_INCREMENT else 0
             }
 
-            println("Animation progress: $increment, Elapsed time: $elapsedTime")
         }
 
         fun draw() {

@@ -47,15 +47,15 @@ object RoundedRect {
 
 
 
-    fun drawHSBBox(matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, color: Color) {
+    fun drawHSBBox(matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, color: HSBColor) {
         if (!HSBBox.isInitialized() || !HSBBox.shader.usable) return
 
         HSBBox.shader.bind()
         HSBBox.shaderCenterUniform.setValue(x + (width / 2), y + (height / 2))
         HSBBox.shaderSizeUniform.setValue(width, height)
-        HSBBox.shaderColorUniform.setValue(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha.toFloat())
+        HSBBox.shaderColorUniform.setValue(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha.toFloat())
 
-        UIBlock.drawBlockWithActiveShader(matrixStack, color, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
+        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
 
         HSBBox.shader.unbind()
     }

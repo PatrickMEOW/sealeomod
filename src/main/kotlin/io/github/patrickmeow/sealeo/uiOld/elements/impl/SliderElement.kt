@@ -1,9 +1,6 @@
 package io.github.patrickmeow.sealeo.uiOld.elements.impl
 
-import io.github.patrickmeow.sealeo.features.Module
-import io.github.patrickmeow.sealeo.features.settings.Setting
 import io.github.patrickmeow.sealeo.features.settings.impl.NumberSetting
-import io.github.patrickmeow.sealeo.uiOld.ClickGui
 import io.github.patrickmeow.sealeo.uiOld.elements.Element
 import io.github.patrickmeow.sealeo.utils.RenderUtils
 import java.awt.Color
@@ -12,38 +9,44 @@ import kotlin.math.roundToInt
 class SliderElement(var x: Float, var y: Float, var setting: NumberSetting) : Element() {
 
     private var draggingNow = false
-
-    fun updatePosition(newX: Float, newY: Float) {
-        x = newX
-        y = newY
+    private var rectColor: Color = Color(30, 31, 40)
+    override fun updatePosition(fl: Float, fl1: Float) {
+        x = fl
+        y = fl1
     }
 
     override fun draw(mouseX: Int, mouseY: Int) {
         super.draw(mouseX, mouseY)
-        var sliderColor = Color(26, 27, 35)
-        var progressColor = Color(48, 158, 233)
+        val sliderColor = Color(26, 27, 35)
+        val progressColor = Color(48, 158, 233)
         if (draggingNow) {
-            //println("dragging")
-            setting.value = (mouseX - x) / 12f
+            setting.value = (mouseX - x - 25) / 12f
         }
+        RenderUtils.roundedRectangle(x - 110f, y - 8f, 280f, 30f, rectColor, 6f)
         RenderUtils.drawText(setting.name, x - 100f, y, -1, 1.2f)
-        RenderUtils.roundedRectangle(x + 15, y + 5f, 120f, 8f, sliderColor, 1.5f)
-        var sliderProgress = setting.value.toFloat() / setting.max.toFloat()
-        RenderUtils.roundedRectangle(x + (sliderProgress * 120) + 10, y + 5f, 10, 8f, progressColor, 1.5f)
-        //RenderUtils.roundedRectangle(x + 15, y + 5f, sliderProgress * 120f, 5f, progressColor, 3f)
-        RenderUtils.drawText(setting.value.toString(), x + 95f, y - 15f, -1, 1f)
+        RenderUtils.roundedRectangle(x + 37, y + 5f, 108f, 8f, sliderColor, 1.5f)
+        val sliderProgress = setting.value.toFloat() / setting.max.toFloat()
+        RenderUtils.roundedRectangle(x + (sliderProgress * 120) + 20, y + 4f, 10, 10f, progressColor, 2f)
+        RenderUtils.drawText("%.1f".format(setting.value), x + 125f, y - 6.5f, -1, 1f)
     }
 
+
     override fun mouseClicked(mouseX: Int, mouseY: Int) {
+        val sliderProgress = setting.value.toFloat() / setting.max.toFloat()
         super.mouseClicked(mouseX, mouseY)
-        if (isMouseOver(mouseX, mouseY, x, y, 120f, 5f)) {
-            var tempValue = (mouseX - x) / 12f
+        if (isMouseOver(mouseX, mouseY, x + (sliderProgress * 120) + 15, y + 4f, 20f, 10f)) {
+            val tempValue = (mouseX - x - 15) / 12f
+            /*
             if (setting.value.toFloat() >= roundToIncrement(tempValue)) {
                 draggingNow = true
             } else {
-                setting.value = (mouseX - x) / 12f
+                setting.value = (mouseX - x - 15) / 12f
             }
+              */
+            draggingNow = true
         }
+
+
 
     }
 

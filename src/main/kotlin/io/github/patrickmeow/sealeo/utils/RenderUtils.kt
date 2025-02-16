@@ -527,6 +527,20 @@ object RenderUtils {
         SealeoFont.text(text, x, y, color, false, (scaleText * 18).toInt())
     }
 
+    fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: HSBColor) {
+        matrix.runLegacyMethod(matrix.get()) {
+            RoundedRect.drawHSBBox(
+                matrix.get(),
+                x,
+                y,
+                w,
+                h,
+                color,
+            )
+        }
+        //rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
+    }
+
 }
 
 

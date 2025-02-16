@@ -7,7 +7,9 @@ import io.github.patrickmeow.sealeo.events.PacketEvent
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.features.settings.impl.BooleanSetting
+import io.github.patrickmeow.sealeo.features.settings.impl.ColorSetting
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
+import io.github.patrickmeow.sealeo.utils.HSBColor
 import io.github.patrickmeow.sealeo.utils.RenderUtils
 import io.github.patrickmeow.sealeo.utils.Vector3
 import net.minecraft.init.Blocks
@@ -31,6 +33,9 @@ object RiftHelper : Module(
     var renderEnable by KeybindSetting("xd", "xd", Keyboard.KEY_H).onPress {
         renderNext = true
     }
+
+    private var col by ColorSetting("Overlay color", "yes", HSBColor(1f, 1f, 1f, 1f))
+    //var col = HSBColor(1f, 1f, 0.2f, 0.6f)
     @SubscribeEvent
     fun onParticle(event: PacketEvent.PacketReceiveEvent) {
         if(event.packet !is S2APacketParticles) return
@@ -62,7 +67,7 @@ object RiftHelper : Module(
             //aabb = aabb.expand(0.0, 0.1, 0.0)
 
             RenderUtils.renderOutlineAABB(aabb, Vector3(0.36f, 0.87f, 0.14f), 1f, false, 1.5f)
-            RenderUtils.renderFilledAABB(aabb, Vector3(0.36f, 0.87f, 0.14f), 0.6f, false)
+            RenderUtils.renderFilledAABB(aabb, Vector3(col.r.toFloat(), col.g.toFloat(), col.b.toFloat()), 0.6f, false)
 
             RenderUtils.drawTracer(Vec3(spawnedBerberis[0].x.toDouble(), spawnedBerberis[0].y.toDouble(), spawnedBerberis[0].z.toDouble()), Vector3(0.36f, 0.87f, 0.14f), 2.5f)
         }
