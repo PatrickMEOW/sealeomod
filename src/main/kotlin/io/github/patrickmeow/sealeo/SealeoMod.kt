@@ -54,7 +54,7 @@ class SealeoMod {
         MinecraftForge.EVENT_BUS.register(RenderUtils)
         RoundedRect.initShaders()
         SealeoFont.init()
-        GetData.parseHypixelData("f6b21a65-85a1-47f3-9d8e-ac342d011066")
+        SealeoFont.text("Warming up the font renderer...", 0f, 0f, 0xFFFFFFFF, false, 18)
     }
 
     @SubscribeEvent

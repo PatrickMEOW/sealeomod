@@ -5,6 +5,7 @@ import io.github.patrickmeow.sealeo.events.PacketEvent
 import io.github.patrickmeow.sealeo.events.ParticleEvent
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
+import io.github.patrickmeow.sealeo.utils.chat
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.network.play.server.S2APacketParticles
@@ -29,7 +30,7 @@ object Simulation : Module(
     fun onTick(event: ClientTickEvent) {
         if (!onSinglePlayer) return
         if (mc.thePlayer == null) return
-
+        chat("skibbiding")
         mc.thePlayer.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.12000)
         mc.thePlayer.capabilities.setPlayerWalkSpeed(0.1200F)
 

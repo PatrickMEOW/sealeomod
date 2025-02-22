@@ -17,7 +17,7 @@ class CategoriesElement : Element() {
         var offsetY = 0f
 
         for (category in Category.entries) {
-            if (isMouseOver(mouseX, mouseY, 245f, 160f + offsetY, 55f, 24f) || selectedCategory == category) {
+            if (isMouseOver(mouseX, mouseY, 245f, 155f + offsetY, 55f, 24f) || selectedCategory == category) {
                 if (isMouseOver(mouseX, mouseY, 245f, 160f + offsetY, 55f, 24f)) {
                     color = Color(37,40,51)
                     if (selectedCategory == category) {

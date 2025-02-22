@@ -1,9 +1,12 @@
 package io.github.patrickmeow.sealeo.uiOld.elements.impl
 
+import io.github.patrickmeow.sealeo.Sealeo
 import io.github.patrickmeow.sealeo.features.settings.impl.BooleanSetting
 import io.github.patrickmeow.sealeo.uiOld.elements.Element
 import io.github.patrickmeow.sealeo.utils.HSBColor
 import io.github.patrickmeow.sealeo.utils.RenderUtils
+import net.minecraft.client.renderer.texture.DynamicTexture
+import net.minecraft.client.renderer.texture.TextureUtil
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
@@ -12,6 +15,8 @@ class SwitchElement(var x: Float, var y: Float, var setting: BooleanSetting) : E
 
     private var toggleButton = ToggleButton(x - 50f, y, setting, false)
     private var rectColor: Color = Color(30, 31, 40)
+    val bufferedImage = TextureUtil.readBufferedImage(Sealeo::class.java.getResourceAsStream("/assets/sealeo/textures/HueGradient.png"))
+    private val hueGradient = DynamicTexture(bufferedImage)
     override fun updatePosition(fl: Float, fl1: Float) {
         toggleButton.updatePosition(fl + 85f, fl1)
         //println("$fl $fl1")
@@ -26,7 +31,7 @@ class SwitchElement(var x: Float, var y: Float, var setting: BooleanSetting) : E
         RenderUtils.roundedRectangle(x - 110f, y - 8f, 280f, 30f, rectColor, 6f)
         RenderUtils.drawText(setting.name, x - 100f, y, -1, 1.2f)
         toggleButton.draw()
-        RenderUtils.drawHSBBox(x + 50f, y + 10f, 50f, 50f, HSBColor(1f, 1f, 1f))
+        //RenderUtils.drawHSBBox(x + 50f, y + 10f, 50f, 50f, HSBColor(1f, 1f, 1f))
     }
 
 

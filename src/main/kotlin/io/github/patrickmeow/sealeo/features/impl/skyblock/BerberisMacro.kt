@@ -6,6 +6,7 @@ import io.github.patrickmeow.sealeo.events.PacketEvent.PacketReceiveEvent
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.features.ModuleManager.rotateSmoothlyTo
+import io.github.patrickmeow.sealeo.features.impl.skyblock.RiftHelper.BerberisPlot
 import io.github.patrickmeow.sealeo.features.settings.impl.BooleanSetting
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
 import io.github.patrickmeow.sealeo.features.settings.impl.NumberSetting
@@ -32,6 +33,7 @@ object BerberisMacro : Module(
     Category.SKYBLOCK
 ) {
 
+    val berberisPlots = mutableListOf<BerberisPlot>()
     var blockedStrings = mutableListOf<String>()
     var nearBerberis: Boolean = true
     private val spawnedBerberis = mutableListOf<BlockPos>()
@@ -39,10 +41,14 @@ object BerberisMacro : Module(
     var targetPitch: Float = 0.0f
     var isRotating = false
 
-
-    val spawnBerberis by KeybindSetting("Spawns", "spawns", Keyboard.KEY_N).onPress {
-        spawnDeadBushes()
+    init {
+        berberisPlots.add(BerberisPlot(-72f, -189f, -56f, -175f))
+        println("added berberis plot")
     }
+
+    //val spawnBerberis by KeybindSetting("Spawns", "spawns", Keyboard.KEY_N).onPress {
+      //  spawnDeadBushes()
+    //}
 
     private val rotationSpeed by NumberSetting("Rotation speed", "Rotation speed", 2f, 1f, 10f, 0.2f)
     private val antiTp by BooleanSetting("Anti teleport", "Prevents banning after tp")
@@ -118,13 +124,17 @@ object BerberisMacro : Module(
 
         if(event.update.block == Blocks.deadbush && event.old.block == Blocks.air) {
             if(spawnedBerberis.contains(event.pos)) return
-            spawnedBerberis.add(event.pos)
+            if(berberisPlots[0].isPlayerInside(event.pos) && berberisPlots[0].isPlayerInside(mc.thePlayer.position)) {
+                spawnedBerberis.add(event.pos)
+            }
+
 
         }
 
         if(event.update.block == Blocks.air && event.old.block == Blocks.deadbush) {
-            spawnedBerberis.remove(event.pos)
-            println("removed")
+            if(berberisPlots[0].isPlayerInside(event.pos) && berberisPlots[0].isPlayerInside(mc.thePlayer.position)) {
+                spawnedBerberis.remove(event.pos)
+            }
         }
 
     }

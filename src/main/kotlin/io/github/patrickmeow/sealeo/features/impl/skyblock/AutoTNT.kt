@@ -20,6 +20,7 @@ object AutoTNT: Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
+        if(mc.thePlayer == null) return
         blocksCorrect = 0
 
         val objectMouseOver = mc.objectMouseOver ?: return

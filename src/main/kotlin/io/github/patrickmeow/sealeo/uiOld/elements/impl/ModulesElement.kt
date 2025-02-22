@@ -160,6 +160,8 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
     }
 
 
+
+
     class ToggleButton(var x: Float, var y: Float, var parent: Module, var isAnimating: Boolean) {
 
         private var animationStartTime: Long = 0
@@ -249,5 +251,8 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         super.keyTyped(typedChar, keyCode)
         searchButton.keyTyped(typedChar, keyCode)
+        if(settingsTab?.settingsOpened == true) {
+            settingsTab?.keyTyped(typedChar, keyCode)
+        }
     }
 }

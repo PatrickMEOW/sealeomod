@@ -135,7 +135,7 @@ object Blink : Module(
         val screenHeight = event.resolution.scaledHeight
         val itemStack = mc.thePlayer?.inventory?.mainInventory!![0]
         //println(itemStack?.item?.registryName.toString())
-        mc.renderItem?.renderItemAndEffectIntoGUI(itemStack, 300, 300)
+        //mc.renderItem?.renderItemAndEffectIntoGUI(itemStack, 300, 300)
 
         if (isRecording) {
             fontRenderer?.drawString("Recording", 10, 400, -1)

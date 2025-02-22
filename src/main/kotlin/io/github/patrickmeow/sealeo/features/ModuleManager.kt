@@ -8,6 +8,7 @@ import io.github.patrickmeow.sealeo.features.impl.movement.Simulation
 import io.github.patrickmeow.sealeo.features.impl.movement.ToggleSprint
 import io.github.patrickmeow.sealeo.features.impl.render.ClickGuiModule
 import io.github.patrickmeow.sealeo.features.impl.render.HitColor
+import io.github.patrickmeow.sealeo.features.impl.render.ModelScale
 import io.github.patrickmeow.sealeo.features.impl.skyblock.*
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
 import net.minecraft.network.Packet
@@ -24,7 +25,7 @@ object ModuleManager {
 
     val messageFunctions = mutableListOf<MessageFunction>()
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
-    val modules: ArrayList<Module> = arrayListOf(ToggleSprint, SlotBinding, Simulation, ClickGuiModule, RiftHelper, MobESP, AutoTNT, HitColor, BerberisMacro, Blink)
+    val modules: ArrayList<Module> = arrayListOf(ToggleSprint, SlotBinding, Simulation, ClickGuiModule, RiftHelper, MobESP, AutoTNT, HitColor, BerberisMacro, Blink, ModelScale)
     var targetYaw = 0.0f
     var targetPitch = 0.0f
     var isRotating = false

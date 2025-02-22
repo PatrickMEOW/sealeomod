@@ -15,7 +15,7 @@ class SearchButton() : Element() {
     private var lastToggleTime: Long = System.currentTimeMillis()
     private val TOGGLE_INTERVAL: Long = 500 // 500ms for flickering effect
     private val x = 600f
-    private val y = 100f
+    private val y = 115f
     private val width = 120f
     private val height = 25f
     val color = Color(33, 35, 44)

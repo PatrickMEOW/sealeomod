@@ -10,8 +10,7 @@ plugins {
     kotlin("plugin.serialization") version "2.0.0-Beta1"
 }
 
-//Constants:
-
+// Constants
 val baseGroup: String by project
 val mcVersion: String by project
 val version: String by project
@@ -19,12 +18,12 @@ val mixinGroup = "$baseGroup.mixin"
 val modid: String by project
 val transformerFile = file("src/main/resources/accesstransformer.cfg")
 
-// Toolchains:
+// Toolchains
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
-// Minecraft configuration:
+// Minecraft configuration
 loom {
     log4jConfigs.from(file("log4j2.xml"))
     launchConfigs {
@@ -46,12 +45,12 @@ loom {
     }
     forge {
         pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-        // If you don't want mixins, remove this lines
+        // If you don't want mixins, remove these lines
         mixinConfig("mixins.$modid.json")
-	    if (transformerFile.exists()) {
-			println("Installing access transformer")
-		    accessTransformer(transformerFile)
-	    }
+        if (transformerFile.exists()) {
+            println("Installing access transformer")
+            accessTransformer(transformerFile)
+        }
     }
     // If you don't want mixins, remove these lines
     mixin {
@@ -69,13 +68,11 @@ sourceSets.main {
     kotlin.destinationDirectory.set(java.destinationDirectory)
 }
 
-// Dependencies:
+// Dependencies
 
 repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
-    // If you don't want to log in with your real minecraft account, remove this line
-
     maven("https://repo.essential.gg/repository/maven-public/")
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
     maven("https://jitpack.io/")
@@ -93,25 +90,20 @@ dependencies {
     compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0-Beta1")
     implementation("com.google.code.gson:gson:2.8.6")
-    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
     shadowImpl(kotlin("stdlib-jdk8"))
     implementation("com.github.Stivais:Commodore:bea320fe0a")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     compileOnly("org.apache.httpcomponents:httpclient:4.5.13")
-
-    // If you don't want mixins, remove these lines
     shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         isTransitive = false
     }
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
-
-    // If you don't want to log in with your real minecraft account, remove this line
     runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.2.1")
-
 }
 
-// Tasks:
+// Tasks
 
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
@@ -122,12 +114,11 @@ tasks.withType(org.gradle.jvm.tasks.Jar::class) {
     manifest.attributes.run {
         this["FMLCorePluginContainsFMLMod"] = "true"
         this["ForceLoadAsMod"] = "true"
-
         // If you don't want mixins, remove these lines
         this["TweakClass"] = "org.spongepowered.asm.launch.MixinTweaker"
         this["MixinConfigs"] = "mixins.$modid.json"
-	    if (transformerFile.exists())
-			this["FMLAT"] = "${modid}_at.cfg"
+        if (transformerFile.exists())
+            this["FMLAT"] = "${modid}_at.cfg"
     }
 }
 
@@ -136,14 +127,11 @@ tasks.processResources {
     inputs.property("mcversion", mcVersion)
     inputs.property("modid", modid)
     inputs.property("basePackage", baseGroup)
-
     filesMatching(listOf("mcmod.info", "mixins.$modid.json")) {
         expand(inputs.properties)
     }
-
     rename("accesstransformer.cfg", "META-INF/${modid}_at.cfg")
 }
-
 
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
     archiveClassifier.set("")
@@ -171,4 +159,3 @@ tasks.shadowJar {
 }
 
 tasks.assemble.get().dependsOn(tasks.remapJar)
-

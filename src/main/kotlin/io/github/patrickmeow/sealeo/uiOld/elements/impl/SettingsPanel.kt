@@ -3,6 +3,7 @@ package io.github.patrickmeow.sealeo.uiOld.elements.impl
 import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.features.settings.impl.BooleanSetting
+import io.github.patrickmeow.sealeo.features.settings.impl.ColorSetting
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
 import io.github.patrickmeow.sealeo.features.settings.impl.NumberSetting
 import io.github.patrickmeow.sealeo.uiOld.ClickGui
@@ -28,7 +29,7 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
     private var currentX: Float = targetX + finalPanelWidth - initialPanelWidth
     private var currentPanelWidth: Float = initialPanelWidth
     private var rectColor: Color = Color(26, 27, 35)
-    var toggleButton = ModulesElement.ToggleButton(currentX, y + 20f, module, false)
+    var toggleButton = ModulesElement.ToggleButton(currentX - 10f, y + 20f, module, false)
 
     override fun draw(mouseX: Int, mouseY: Int) {
         super.draw(mouseX, mouseY)
@@ -37,7 +38,7 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
         val color = Color(33, 35, 44)
         val moduleText = module.name
         val textWidth = RenderUtils.measureTextWidth(moduleText, 1.5f)
-        val moduleTextPosX = (currentPanelWidth - textWidth) / 2
+        val moduleTextPosX = (currentPanelWidth - 20f) / 2
 
         RenderUtils.roundedRectangle(currentX, y, currentPanelWidth, 320f, color, color, color, 0f, 0f, 8f, 0f, 8f, 0.1f)
 
@@ -53,33 +54,43 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
         RenderUtils.drawText(moduleText, currentX + moduleTextPosX - 80f, y + 20f, -1, 1.5f)
         RenderUtils.roundedRectangle(currentX + 5f, y + 10f, 25, 20f, rectColor, 4f)
         RenderUtils.drawText("X", currentX + 10.5f, y + 8f, 0xFFeb4034, 1.8f)
-        toggleButton.updatePosition(currentX + moduleTextPosX + 110f, y + 20f)
+        toggleButton.updatePosition(currentX + moduleTextPosX + 80f, y + 20f)
         toggleButton.draw()
 
         var offsetY = 0f
 
         for (setting in module.settings) {
-            if (setting is KeybindSetting) continue
             val element = when (setting) {
-                is NumberSetting -> SliderElement(currentX + moduleTextPosX + 20f, y + 70f + offsetY, setting)
-                is BooleanSetting -> SwitchElement(currentX + moduleTextPosX + 20f, y + 70f + offsetY, setting)
+                is NumberSetting -> SliderElement(currentX + moduleTextPosX - 20f, y + 70f + offsetY, setting)
+                is BooleanSetting -> SwitchElement(currentX + moduleTextPosX - 20f, y + 70f + offsetY, setting)
+                is ColorSetting -> ColorElement(currentX + moduleTextPosX - 20f, y + 70f + offsetY, setting)
+                is KeybindSetting -> KeybindElement(currentX + moduleTextPosX - 20f, y + 70f + offsetY, setting)
                 else -> null
             }
+            if(element is KeybindElement && element.setting.name == "Toggle") continue
             element?.let {
                 if (!settingsElements.contains(it)) {
                     settingsElements.add(it)
-                    println("adding $offsetY")
                 } else {
                     // Update the position of the existing element
                     val existingElement = settingsElements.find { e -> e == it }
-                    existingElement?.updatePosition(currentX + moduleTextPosX + 25f, y + 70f + offsetY)
+                    existingElement?.updatePosition(currentX + moduleTextPosX - 25f, y + 70f + offsetY)
                 }
                 offsetY += 35f
             }
         }
 
         for (element in settingsElements) {
+
             element.draw(mouseX, mouseY)
+
+        }
+        for(colorElement in settingsElements) {
+            if(colorElement is ColorElement) {
+                if(colorElement.isOpened) {
+                    colorElement.drawColorPicker(mouseX, mouseY)
+                }
+            }
         }
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST)
@@ -141,6 +152,15 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
         super.onRelease(mouseX, mouseY)
         for (element in settingsElements) {
             element.onRelease(mouseX, mouseY)
+        }
+    }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        super.keyTyped(typedChar, keyCode)
+        for(element in settingsElements) {
+            if(element is KeybindElement) {
+                element.keyTyped(typedChar, keyCode)
+            }
         }
     }
 }

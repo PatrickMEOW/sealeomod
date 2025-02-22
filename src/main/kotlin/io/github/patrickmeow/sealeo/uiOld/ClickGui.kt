@@ -48,21 +48,21 @@ object ClickGui : GuiScreen() {
         categories = CategoriesElement()
         modulesElement = ModulesElement(categories)
         sc = ScaledResolution(mc)
-        x = ((sc!!.scaledWidth - width) / 2).toFloat()
-        y = ((sc!!.scaledHeight - height) / 2).toFloat()
+        x = ((sc!!.scaledWidth - 525f) / 2)
+        y = ((sc!!.scaledHeight - 320f) / 2)
     }
 
     private fun updateAnimationState() {
         val elapsedTime = System.currentTimeMillis() - animationStartTime
-        scale = Math.min(1.0f, elapsedTime / ANIMATION_DURATION.toFloat())
+        scale = 1.0f.coerceAtMost(elapsedTime / ANIMATION_DURATION.toFloat())
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
         updateAnimationState()
 
-        val x1 = x + width
-        val y1 = y + height
+        val x1 = x + 525f
+        val y1 = y + 320f
 
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
         GL11.glPushMatrix()
@@ -74,8 +74,8 @@ object ClickGui : GuiScreen() {
 
         RenderUtils.roundedRectangle(x, y, width, height, rectColor, 8f)
         RenderUtils.roundedRectangle(x, y, 135f, height, sideColor, sideColor, sideColor, 0f, 8f, 0f, 8f, 0f, 0.1f)
-        RenderUtils.drawText("Sealeo", x + 10, y + 10, 0xFF5A94DE, 2.5f)
-        RenderUtils.drawText("by Patrick", x + 24, y + 29, -0xc0c879, 1.35f)
+        RenderUtils.drawText("Sealeo", x + 10, y + 3, 0xFF5A94DE, 2.5f)
+        RenderUtils.drawText("by Patrick", x + 24, y + 22, -0xc0c879, 1.35f)
 
 
 

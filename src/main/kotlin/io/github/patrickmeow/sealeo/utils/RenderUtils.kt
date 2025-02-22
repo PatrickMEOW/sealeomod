@@ -1,5 +1,6 @@
 package io.github.patrickmeow.sealeo.utils
 
+import gg.essential.elementa.components.GradientComponent
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.shader.UShader
 import io.github.patrickmeow.sealeo.Sealeo.mc
@@ -11,6 +12,7 @@ import net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
@@ -108,6 +110,9 @@ object RenderUtils {
         roundedRectangle(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color, color, color,
             0f, radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), edgeSoftness)
 
+    fun rectangleOutline(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, thickness: Number, edgeSoftness: Number = 0.1f) {
+        roundedRectangle(x, y, w, h, Color(0, 0, 0, 0), color, Color(0,0,0,0), thickness, radius, radius, radius, radius, edgeSoftness)
+    }
 
     /**
      *
@@ -521,9 +526,6 @@ object RenderUtils {
 
 
     fun drawText(text: String, x: Float, y: Float, color: Long, scaleText: Float) {
-
-
-       //mc.fontRendererObj.drawStringWithShadow(text, adjustedX.toFloat(), adjustedY.toFloat(), color)
         SealeoFont.text(text, x, y, color, false, (scaleText * 18).toInt())
     }
 
@@ -538,9 +540,77 @@ object RenderUtils {
                 color,
             )
         }
-        //rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
+        rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
     }
 
+    private fun HSBColor.bind() {
+        GlStateManager.resetColor()
+        GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f)
+    }
+
+    fun drawTexturedModalRect(
+        x: Int, y: Int, width: Int, height: Int,
+        u: Float = 0f, v: Float = 0f, uWidth: Int = 1, vHeight: Int = 1,
+        tileWidth: Float = 1.0f, tileHeight: Float = 1.0f
+    ) {
+        val f = 1.0f / tileWidth
+        val g = 1.0f / tileHeight
+        HSBColor.WHITE.bind()
+        worldRenderer {
+            begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+            pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
+            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
+            pos((x + width).toDouble(), y.toDouble(), 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), (v * g).toDouble()).endVertex()
+            pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * g).toDouble()).endVertex()
+        }
+        tessellator.draw()
+    }
+
+
+    fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Number, y: Number, w: Number, h: Number) {
+        dynamicTexture.updateDynamicTexture()
+        bindTexture(dynamicTexture.glTextureId)
+        drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
+    }
+
+    fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: HSBColor, color2: HSBColor, radius: Float, direction: GradientDirection = GradientDirection.Right, borderColor: Color = Color(0f, 0f, 0f, 0f), borderThickness: Number = 0f) {
+        roundedRectangle(
+            x, y, w, h, color1.coerceAlpha(.1f, 1f).javaColor, borderColor, Color(0f, 0f, 0f, 0f), borderThickness, radius, radius, radius, radius, 0.1f, color2.coerceAlpha(.1f, 1f).javaColor, direction.ordinal
+        )
+    }
+
+    fun HSBColor.coerceAlpha(min: Float, max: Float): HSBColor {
+        return if (this.alpha < min) this.withAlpha(min)
+        else if (this.alpha > max) this.withAlpha(max)
+        else this
+    }
+
+
+    fun HSBColor.withAlpha(alpha: Float, newInstance: Boolean = true): HSBColor {
+        if (!newInstance) {
+            this.alpha = alpha
+            return this
+        }
+        return HSBColor(r, g, b, alpha)
+    }
+    enum class GradientDirection {
+        Right, Down, Left, Up
+    }
+
+
+    fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Color = color, borderThickness: Number = 0f) {
+        matrix.runLegacyMethod(matrix.get()) {
+            RoundedRect.drawCircle(
+                matrix.get(),
+                x.toFloat(),
+                y.toFloat(),
+                radius.toFloat(),
+                color,
+                borderColor,
+                borderThickness.toFloat()
+            )
+        }
+    }
 }
 
 
