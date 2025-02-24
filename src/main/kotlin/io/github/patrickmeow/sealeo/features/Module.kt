@@ -29,7 +29,7 @@ abstract class Module(
 
 
     init {
-        MinecraftForge.EVENT_BUS.register(this)
+        //MinecraftForge.EVENT_BUS.register(this)
     }
 
     open fun onEnable() {

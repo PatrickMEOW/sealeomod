@@ -3,7 +3,8 @@ package io.github.patrickmeow.sealeo.uiOld.elements.impl
 import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
-import io.github.patrickmeow.sealeo.features.ModuleManager.modules
+import io.github.patrickmeow.sealeo.features.ModuleManager
+
 import io.github.patrickmeow.sealeo.uiOld.ClickGui
 import io.github.patrickmeow.sealeo.uiOld.elements.Element
 import io.github.patrickmeow.sealeo.utils.RenderUtils
@@ -11,25 +12,36 @@ import io.github.patrickmeow.sealeo.utils.SealeoFont
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
-
+import io.github.patrickmeow.sealeo.uiOld.ClickGui.x
+import io.github.patrickmeow.sealeo.uiOld.ClickGui.y
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 
+
+
+
 class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
 
-    private val moduleButtons = ArrayList<ToggleButton>()
+    val moduleButtons = ArrayList<ToggleButton>()
     private var previousCategory: Category = Category.SKYBLOCK
     private var scrollOffsetY = 0f
     private val scrollSpeed = 15f
     private var settingsOpened = false
     private var settingsTab: SettingsPanel? = null
-    private lateinit var searchButton: SearchButton
+    private var searchButton: SearchButton = SearchButton(this)
 
-    init {
-        searchButton = SearchButton()
-    }
+
+    private var modules = searchButton.filteredModules.ifEmpty { ModuleManager.modules }
 
     override fun draw(mouseX: Int, mouseY: Int) {
+
+
+
+        modules = searchButton.filteredModules.ifEmpty { ModuleManager.modules }
+        if(searchButton.isEmpty) {
+            modules = searchButton.filteredModules
+            moduleButtons.clear()
+        }
         super.draw(mouseX, mouseY)
         //println(categoriesElement.selectedCategory.toString())
         // Handle scrolling
@@ -39,8 +51,8 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
         var color = Color(33, 35, 44)
         searchButton.draw(mouseX, mouseY)
 
-        val scissorX = 370f
-        val scissorY = 150f
+        val scissorX = x + 152.5f
+        val scissorY = y + 40f
         val scissorWidth = 300f
         val scissorHeight = 262f
 
@@ -55,23 +67,22 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
 
         for (module in modules) {
             if (module.hidden) continue
-            if (module.category == categoriesElement.selectedCategory) {
+            if (module.category == categoriesElement.selectedCategory || searchButton.filteredModules.isNotEmpty()) {
                 if (offsetY >= -600f && offsetY <= 2500f) {
-                    if (isMouseOver(mouseX, mouseY, 370f, 150f + offsetY, 300f, 40f)) {
+                    if (isMouseOver(mouseX, mouseY, x + 152.5f, y + 40f + offsetY, 300f, 40f)) {
                         color = Color(37, 40, 51)
                     } else {
                         color = Color(33, 35, 44)
                     }
-                    RenderUtils.roundedRectangle(370f, 150f + offsetY, 300f, 40f, color, 6f, 0.1f)
-                    RenderUtils.drawText(module.name, 380f, 158f + offsetY, -1, 1.4f)
-                    //SealeoFont.text(module.name, 380f, 160f + offsetY, 0xFFFFFFFF, false, 24)
-                    RenderUtils.drawText(module.description, 380f, 175f + offsetY, 0xFF5b5b5b, 1f)
-                    val button = ToggleButton(580f, 161f + offsetY, module, false)
-                    button.updatePosition(580f, 161f + offsetY)
+                    RenderUtils.roundedRectangle(x + 152.5f, y + 40f + offsetY, 300f, 40f, color, 6f, 0.1f)
+                    RenderUtils.drawText(module.name, x + 162.5f, y + 48f + offsetY, -1, 1.4f)
+                    RenderUtils.drawText(module.description, x + 162.5f, y + 65f + offsetY, 0xFF5b5b5b, 1f)
+                    val button = ToggleButton(x + 362.5f, y + 51f + offsetY, module, false)
+                    button.updatePosition(x + 362.5f, y + 51f + offsetY)
                     if (!moduleButtons.contains(button)) {
                         moduleButtons.add(button)
                     } else {
-                        moduleButtons.find { it.parent == module }?.updatePosition(580f, 161f + offsetY)
+                        moduleButtons.find { it.parent == module }?.updatePosition(x + 362.5f, y + 51f + offsetY)
                     }
 
                     //button.draw()
@@ -114,6 +125,17 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int) {
         super.mouseClicked(mouseX, mouseY)
+
+        if (previousCategory != categoriesElement.selectedCategory) {
+
+            modules = ModuleManager.modules
+            searchButton.resetSearch()
+            searchButton.filteredModules.clear()
+            moduleButtons.clear()
+            settingsTab?.startClosingAnimation()
+            scrollOffsetY = 0f
+            previousCategory = categoriesElement.selectedCategory
+        }
         if (settingsTab?.settingsOpened == true) {
             settingsTab?.mouseClicked(mouseX, mouseY)
             return
@@ -130,17 +152,12 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
         }
 
         var offsetY = scrollOffsetY
-        if (previousCategory != categoriesElement.selectedCategory) {
-            println("resetting offset")
-            moduleButtons.clear()
-            scrollOffsetY = 0f
-            previousCategory = categoriesElement.selectedCategory
-        }
+
 
         for (module in modules) {
             if (module.hidden) continue
-            if (module.category == categoriesElement.selectedCategory) {
-                if (isMouseOver(mouseX, mouseY, 370f, 140f + offsetY, 300f, 40f)) {
+            if (module.category == categoriesElement.selectedCategory || searchButton.filteredModules.isNotEmpty()) {
+                if (isMouseOver(mouseX, mouseY, x + 152.5f, y + 30f + offsetY, 300f, 40f)) {
                     println("$mouseX $mouseY")
                     println("Clicked ${module.name}")
                     settingsTab = SettingsPanel(module, this)
@@ -158,7 +175,6 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
             settingsTab?.onRelease(mouseX, mouseY)
         }
     }
-
 
 
 
@@ -246,7 +262,6 @@ class ModulesElement(val categoriesElement: CategoriesElement) : Element() {
             return result
         }
     }
-
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         super.keyTyped(typedChar, keyCode)

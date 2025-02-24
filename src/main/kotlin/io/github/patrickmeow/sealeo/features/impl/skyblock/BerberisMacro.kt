@@ -40,6 +40,10 @@ object BerberisMacro : Module(
     var targetYaw: Float = 0.0f
     var targetPitch: Float = 0.0f
     var isRotating = false
+    var timeSinceLast = 0L
+    var timeLast = 0L
+
+
 
     init {
         berberisPlots.add(BerberisPlot(-72f, -189f, -56f, -175f))
@@ -53,29 +57,14 @@ object BerberisMacro : Module(
     private val rotationSpeed by NumberSetting("Rotation speed", "Rotation speed", 2f, 1f, 10f, 0.2f)
     private val antiTp by BooleanSetting("Anti teleport", "Prevents banning after tp")
 
-    private fun spawnDeadBushes() {
-        val player = mc.thePlayer ?: return
-        val rand = Random()
-        val playerX = player.posX
-        val playerY = player.posY
-        val playerZ = player.posZ
-
-        val numberOfBushes = 5
-
-        for (i in 1..numberOfBushes) {
-
-            val randomX = playerX + (rand.nextInt(9) - 4)
-            val randomZ = playerZ + (rand.nextInt(9) - 4)
-
-
-            sendCommand("setblock $randomX $playerY $randomZ minecraft:deadbush")
-        }
-    }
 
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if(mc.thePlayer == null) return
+        if(System.currentTimeMillis()  <= timeLast + 400)  {
+            return
+        }
         val blockUnder = mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX.toInt(), (mc.thePlayer.posY -1).toInt(), mc.thePlayer.posZ.toInt()))
         if(blockUnder.block == Blocks.bedrock) return
         if(spawnedBerberis.size < 1) return
@@ -83,7 +72,7 @@ object BerberisMacro : Module(
 
         //nearBerberis = false
         val playerPos = mc.thePlayer?.position
-        val positions = BlockPos.getAllInBox(playerPos?.add(10, 0, 10), playerPos?.add(-10, 0, -10))
+        val positions = BlockPos.getAllInBox(playerPos?.add(20, 0, 20), playerPos?.add(-20, 0, -20))
 
 
 
@@ -126,7 +115,9 @@ object BerberisMacro : Module(
             if(spawnedBerberis.contains(event.pos)) return
             if(berberisPlots[0].isPlayerInside(event.pos) && berberisPlots[0].isPlayerInside(mc.thePlayer.position)) {
                 spawnedBerberis.add(event.pos)
+                timeLast = System.currentTimeMillis()
             }
+
 
 
         }
@@ -135,6 +126,7 @@ object BerberisMacro : Module(
             if(berberisPlots[0].isPlayerInside(event.pos) && berberisPlots[0].isPlayerInside(mc.thePlayer.position)) {
                 spawnedBerberis.remove(event.pos)
             }
+
         }
 
     }

@@ -2,31 +2,40 @@ package io.github.patrickmeow.sealeo.uiOld.elements.impl
 
 import io.github.patrickmeow.sealeo.features.Module
 import io.github.patrickmeow.sealeo.features.ModuleManager
+import io.github.patrickmeow.sealeo.uiOld.ClickGui
 import io.github.patrickmeow.sealeo.uiOld.elements.Element
 import io.github.patrickmeow.sealeo.utils.RenderUtils
 import java.awt.Color
 
 
-class SearchButton() : Element() {
+class SearchButton(var modulesElement: ModulesElement) : Element() {
     private var searchString: String = "Search.."
     private var isSearching: Boolean = false
-    private var filteredModules: MutableList<Module> = mutableListOf()
+    var filteredModules: MutableList<Module> = mutableListOf()
     private var showUnderscore: Boolean = true
     private var lastToggleTime: Long = System.currentTimeMillis()
     private val TOGGLE_INTERVAL: Long = 500 // 500ms for flickering effect
-    private val x = 600f
-    private val y = 115f
+    private var x = ClickGui.x + 382.5f
+    private var y = ClickGui.y + 5f
+    //private val x = 600f
+    //private val y = 115f
     private val width = 120f
     private val height = 25f
     val color = Color(33, 35, 44)
+    var isEmpty = false
 
+
+
+    fun resetSearch() {
+        searchString = "Search.."
+    }
 
     override fun draw(mouseX: Int, mouseY: Int) {
+        isEmpty = searchString.length >= 2 && filteredModules.isEmpty() && searchString != "Search.."
+        x = ClickGui.x + 382.5f
+        y = ClickGui.y + 5f
         updateUnderscore()
         val displayText = if (isSearching && showUnderscore) searchString + "_" else searchString
-        //RoundedRect.drawRoundedRect(x, y, x + width, y + height, 8f, 0xFF1f2129.toInt())
-        //RenderUtils.drawText(displayText, (x + 5).toInt(), (y + 7).toInt(), 0xFF687076.toInt(), 1F)
-
         RenderUtils.roundedRectangle(x, y, width, height, color, 6f, 0.1f)
         RenderUtils.drawText(displayText, x + 10f, y + 5f, 0xFF687076, 1f)
     }
@@ -49,13 +58,8 @@ class SearchButton() : Element() {
             } else if (!isSearching) {
                 isSearching = true
             }
-        } else {
-            //searchString = "Search.."
-            //isSearching = false
-            //filteredModules.clear()
         }
     }
-
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (!isSearching) return
@@ -78,20 +82,20 @@ class SearchButton() : Element() {
         }
     }
 
-
-
-
     private fun processSearch() {
         val modules = ModuleManager.modules
 
+        modulesElement.moduleButtons.clear()
         if (searchString == "_" || searchString.isEmpty()) {
             filteredModules.clear()
+
             return
         }
         val query = searchString.lowercase()
 
         for (module in modules) {
             if (module.name.lowercase().startsWith(query) && !filteredModules.contains(module)) {
+                println("adding")
                 filteredModules.add(module)
             } else {
                 if (filteredModules.contains(module) && !module.name.lowercase().startsWith(query)) {
@@ -101,7 +105,4 @@ class SearchButton() : Element() {
         }
     }
 
-    fun getFilteredModules(): List<Module> {
-        return filteredModules
-    }
 }

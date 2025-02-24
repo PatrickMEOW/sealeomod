@@ -31,10 +31,12 @@ object RiftHelper : Module(
 
 
 
-    val berberisPlots = mutableListOf<BerberisPlot>()
+    private val berberisPlots = mutableListOf<BerberisPlot>()
 
-    val spawnedBerberis = mutableListOf<BlockPos>()
-    var renderNext by BooleanSetting("Render next", "Renders next")
+    private val spawnedBerberis = mutableListOf<BlockPos>()
+    private var renderNext by BooleanSetting("Render next", "Renders next berberis")
+    var checkPlot by BooleanSetting("Check for plot", "Checks")
+
 
     init {
         berberisPlots.add(BerberisPlot(-72f, -189f, -56f, -175f))
@@ -42,8 +44,8 @@ object RiftHelper : Module(
     }
 
 
-    private var col by ColorSetting("Overlay color", "yes", HSBColor(0.28f, 0.84f, 0.87f, 0.5f))
-    private var outlineColor by ColorSetting("Outline color", "yes", HSBColor(0.28f, 0.84f, 0.87f, 0.8f))
+    private var col by ColorSetting("Overlay color", "Color of the block overlay", HSBColor(0.28f, 0.84f, 0.87f, 0.5f))
+    private var outlineColor by ColorSetting("Outline color", "Color of the block outline", HSBColor(0.28f, 0.84f, 0.87f, 0.8f))
     //var col = HSBColor(1f, 1f, 0.2f, 0.6f)
     @SubscribeEvent
     fun onParticle(event: PacketEvent.PacketReceiveEvent) {

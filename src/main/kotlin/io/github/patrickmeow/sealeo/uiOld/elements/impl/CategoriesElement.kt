@@ -1,9 +1,12 @@
 package io.github.patrickmeow.sealeo.uiOld.elements.impl
+
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.uiOld.elements.Element
 import io.github.patrickmeow.sealeo.utils.RenderUtils
 import io.github.patrickmeow.sealeo.utils.SealeoFont
 import java.awt.Color
+import io.github.patrickmeow.sealeo.uiOld.ClickGui.x
+import io.github.patrickmeow.sealeo.uiOld.ClickGui.y
 
 class CategoriesElement : Element() {
 
@@ -17,8 +20,8 @@ class CategoriesElement : Element() {
         var offsetY = 0f
 
         for (category in Category.entries) {
-            if (isMouseOver(mouseX, mouseY, 245f, 155f + offsetY, 55f, 24f) || selectedCategory == category) {
-                if (isMouseOver(mouseX, mouseY, 245f, 160f + offsetY, 55f, 24f)) {
+            if (isMouseOver(mouseX, mouseY, x + 27.5f, y + 45f + offsetY, 55f, 24f) || selectedCategory == category) {
+                if (isMouseOver(mouseX, mouseY, x + 27.5f, y + 50f + offsetY, 55f, 24f)) {
                     color = Color(37,40,51)
                     if (selectedCategory == category) {
                         color = Color(39, 45, 62)
@@ -30,9 +33,9 @@ class CategoriesElement : Element() {
                     }
                 }
 
-                RenderUtils.roundedRectangle(230f, 152f + offsetY, 105f, 25f, color, 6f, 0.1f)
+                RenderUtils.roundedRectangle(x + 12.5f, y + 42f + offsetY, 105f, 25f, color, 6f, 0.1f)
             }
-            RenderUtils.drawText(category.getFormattedName(), 245f, 156f + offsetY, -1, 1f)
+            RenderUtils.drawText(category.getFormattedName(), x + 27.5f, y + 46f + offsetY, -1, 1f)
 
             offsetY += 40f
         }
@@ -42,7 +45,7 @@ class CategoriesElement : Element() {
         super.mouseClicked(mouseX, mouseY)
         var offset = 0f
         for (category in Category.entries) {
-            if (isMouseOver(mouseX, mouseY, 245f, 160f + offset, 55f, 24f)) {
+            if (isMouseOver(mouseX, mouseY, x + 27.5f, y + 50f + offset, 55f, 24f)) {
                 selectedCategory = category
                 println("selected $category")
             }
@@ -50,6 +53,3 @@ class CategoriesElement : Element() {
         }
     }
 }
-
-
-

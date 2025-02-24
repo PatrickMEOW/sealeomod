@@ -5,6 +5,7 @@ import io.github.patrickmeow.sealeo.uiOld.elements.impl.CategoriesElement
 import io.github.patrickmeow.sealeo.uiOld.elements.impl.ModulesElement
 import io.github.patrickmeow.sealeo.uiOld.elements.impl.SearchButton
 import io.github.patrickmeow.sealeo.utils.RenderUtils
+import io.github.patrickmeow.sealeo.utils.chat
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
@@ -50,6 +51,11 @@ object ClickGui : GuiScreen() {
         sc = ScaledResolution(mc)
         x = ((sc!!.scaledWidth - 525f) / 2)
         y = ((sc!!.scaledHeight - 320f) / 2)
+        //x = sc!!.scaledWidth - (525f / 2)
+        //y = sc!!.scaledHeight - (320f / 2)
+        //chat("X $x")
+        //chat("Y $y")
+
     }
 
     private fun updateAnimationState() {
