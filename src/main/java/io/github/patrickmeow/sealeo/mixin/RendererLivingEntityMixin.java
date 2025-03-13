@@ -22,7 +22,7 @@ public abstract class RendererLivingEntityMixin<T extends EntityLivingBase> exte
     public FloatBuffer setRed(FloatBuffer instance, float v, EntityLivingBase entity) {
         if(HitColor.INSTANCE.getEnabled()) {
             if (entity instanceof EntityZombie) {
-                instance.put(HitColor.INSTANCE.getColorRed());
+                instance.put(HitColor.INSTANCE.getHitColor().getRedFloat());
             } else {
                 instance.put(v);
             }
@@ -37,7 +37,7 @@ public abstract class RendererLivingEntityMixin<T extends EntityLivingBase> exte
     public FloatBuffer setGreen(FloatBuffer instance, float v, EntityLivingBase entity) {
         if(HitColor.INSTANCE.getEnabled()) {
             if (entity instanceof EntityZombie) {
-                instance.put(HitColor.INSTANCE.getColorGreen());
+                instance.put(HitColor.INSTANCE.getHitColor().getGreenFloat());
             } else {
                 instance.put(v);
             }
@@ -52,7 +52,7 @@ public abstract class RendererLivingEntityMixin<T extends EntityLivingBase> exte
     public FloatBuffer setBlue(FloatBuffer instance, float v, EntityLivingBase entity) {
         if(HitColor.INSTANCE.getEnabled()) {
             if (entity instanceof EntityZombie) {
-                instance.put(HitColor.INSTANCE.getColorBlue());
+                instance.put(HitColor.INSTANCE.getHitColor().getBlueFloat());
             } else {
                 instance.put(v);
             }
@@ -68,7 +68,7 @@ public abstract class RendererLivingEntityMixin<T extends EntityLivingBase> exte
 
         if(HitColor.INSTANCE.getEnabled()) {
             if (entity instanceof EntityZombie) {
-                instance.put(HitColor.INSTANCE.getAlpha());
+                instance.put(HitColor.INSTANCE.getHitColor().getAlpha());
             } else {
                 instance.put(v);
             }

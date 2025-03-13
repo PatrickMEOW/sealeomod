@@ -6,9 +6,7 @@ import io.github.patrickmeow.sealeo.events.InputEvent
 import io.github.patrickmeow.sealeo.features.impl.movement.Blink
 import io.github.patrickmeow.sealeo.features.impl.movement.Simulation
 import io.github.patrickmeow.sealeo.features.impl.movement.ToggleSprint
-import io.github.patrickmeow.sealeo.features.impl.render.ClickGuiModule
-import io.github.patrickmeow.sealeo.features.impl.render.HitColor
-import io.github.patrickmeow.sealeo.features.impl.render.ModelScale
+import io.github.patrickmeow.sealeo.features.impl.render.*
 import io.github.patrickmeow.sealeo.features.impl.skyblock.*
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
 import net.minecraft.network.Packet
@@ -23,13 +21,13 @@ object ModuleManager {
     data class MessageFunction(val msg: String, val function: () -> Unit)
     data class PacketFunction<T: Packet<*>>(val packetType: Class<T>, val function: (T) -> Unit)
 
-    val messageFunctions = mutableListOf<MessageFunction>()
+    private val messageFunctions = mutableListOf<MessageFunction>()
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
-    val modules: ArrayList<Module> = arrayListOf(ToggleSprint, SlotBinding, Simulation, ClickGuiModule, RiftHelper, MobESP, AutoTNT, HitColor, BerberisMacro, Blink, ModelScale)
-    var targetYaw = 0.0f
-    var targetPitch = 0.0f
-    var isRotating = false
-    var rotationSpeed: Float = 3f
+    val modules: ArrayList<Module> = arrayListOf(ToggleSprint, SlotBinding, Simulation, ClickGuiModule, RiftHelper, MobESP, AutoTNT, HitColor, BerberisMacro, Blink, ModelScale, BlockOverlay, Timers, MageBeam)
+    private var targetYaw = 0.0f
+    private var targetPitch = 0.0f
+    private var isRotating = false
+    private var rotationSpeed: Float = 3f
 
     fun getModule(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
@@ -39,7 +37,7 @@ object ModuleManager {
 
     init {
         for (module in modules) {
-            module.register(KeybindSetting("Toggle", "toggles", Keyboard.KEY_L)).onPress {
+            module.register(KeybindSetting("Toggle", "toggles", Keyboard.KEY_NONE)).onPress {
                 module.setToggled()
             }
         }

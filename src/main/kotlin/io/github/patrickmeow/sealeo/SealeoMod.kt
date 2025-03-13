@@ -4,6 +4,7 @@ import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.commands.AntiMuteCommand
 import io.github.patrickmeow.sealeo.commands.pvCommand
 import io.github.patrickmeow.sealeo.features.ModuleManager
+import io.github.patrickmeow.sealeo.features.impl.movement.Blink
 import io.github.patrickmeow.sealeo.features.impl.render.ClickGuiModule
 import io.github.patrickmeow.sealeo.utils.RenderUtils
 import io.github.patrickmeow.sealeo.utils.RoundedRect
@@ -55,6 +56,7 @@ class SealeoMod {
         RoundedRect.initShaders()
         SealeoFont.init()
         SealeoFont.text("Warming up the font renderer...", 0f, 0f, 0xFFFFFFFF, false, 18)
+        Blink.loadRoutes()
     }
 
     @SubscribeEvent

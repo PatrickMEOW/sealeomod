@@ -5,10 +5,8 @@ import io.github.patrickmeow.sealeo.events.ChatReceivedEvent
 import io.github.patrickmeow.sealeo.events.PacketEvent
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
-import io.github.patrickmeow.sealeo.features.ModuleManager
 import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
 import io.github.patrickmeow.sealeo.utils.*
-import net.minecraft.client.settings.KeyBinding
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -17,19 +15,12 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.fml.client.registry.ClientRegistry
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import gg.essential.universal.UMatrixStack
-import net.minecraft.init.Blocks
-import net.minecraft.item.ItemStack
-import net.minecraftforge.event.world.WorldEvent
-import java.awt.Color
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -41,7 +32,7 @@ object Blink : Module(
     Category.RENDER
 ) {
 
-    // TODO - hardcode routes for relics, add reading routes from json file
+    // TODO - hardcode routes for relics
     private val recordedPackets = mutableListOf<BlinkPacket>()
     private val routes = mutableListOf<BlinkRoute>()
     private var numPackets: Int = 0
@@ -53,6 +44,8 @@ object Blink : Module(
     private val cancelTimes = mutableListOf<Long>()
     private var lastBlinkTime: Long = 0
     private var receivedS08: Boolean = false
+
+
     private val keybind by KeybindSetting("Recording", "record", Keyboard.KEY_B).onPress {
         if(!enabled) return@onPress
         if (isRecording) {
@@ -62,15 +55,19 @@ object Blink : Module(
             val routePackets = recordedPackets.toMutableList()
             routes.add(BlinkRoute(routePackets.size, "Blink", firstPos!!, secondPos!!, routePackets))
             saveRoutes()
-            for(packet in routePackets) {
+            /*
+                for(packet in routePackets) {
                 println(packet.x.toString() + " " + packet.y.toString() + " " + packet.z.toString())
             }
+             */
             recordedPackets.clear()
         } else {
             firstPos = mc.thePlayer?.position
             isRecording = true
         }
     }
+
+
     private val undoRoute by KeybindSetting("Delete route", "Deletes route", Keyboard.KEY_C).onPress {
         routes.removeLastOrNull()
         saveRoutes()
@@ -240,7 +237,7 @@ object Blink : Module(
         println("Routes loaded from ${routesFile.absolutePath}")
     }
 
-    class BlinkPacket(var x: Double, var y: Double, var z: Double, var onGround: Boolean)
+    data class BlinkPacket(var x: Double, var y: Double, var z: Double, var onGround: Boolean)
 
-    class BlinkRoute(var numOfPackets: Int, var name: String, var first: BlockPos, var second: BlockPos, var recordedPackets: MutableList<BlinkPacket>)
+    data class BlinkRoute(var numOfPackets: Int, var name: String, var first: BlockPos, var second: BlockPos, var recordedPackets: MutableList<BlinkPacket>)
 }

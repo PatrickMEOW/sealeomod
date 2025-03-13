@@ -1,6 +1,5 @@
 package io.github.patrickmeow.sealeo.utils
 
-import gg.essential.elementa.components.GradientComponent
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.shader.UShader
 import io.github.patrickmeow.sealeo.Sealeo.mc
@@ -24,12 +23,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.glu.Cylinder
-import org.lwjgl.util.vector.Matrix4f
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
-import java.awt.Graphics2D
-import java.awt.Rectangle
-import java.nio.FloatBuffer
 
 object RenderUtils {
 
@@ -37,44 +32,12 @@ object RenderUtils {
     private val tessellator: Tessellator = Tessellator.getInstance()
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val renderManager: RenderManager = mc.renderManager
-    val matrix = UMatrixStack.Compat
+    private val matrix = UMatrixStack.Compat
 
 
-    private var graphics2D: Graphics2D? = null
-
-    fun setGraphics2D(g2d: Graphics2D) {
-        graphics2D = g2d
-    }
-
-    fun setClip(x: Int, y: Int, width: Int, height: Int) {
-        graphics2D?.clip = Rectangle(x, y, width, height)
-    }
-
-    fun resetClip() {
-        graphics2D?.clip = null
-    }
     fun measureTextWidth(text: String, scale: Float): Float {
         val fontRenderer = Minecraft.getMinecraft().fontRendererObj
         return fontRenderer.getStringWidth(text) * scale
-    }
-
-    fun drawRectangle(x: Float, y: Float, width: Float, height: Float, color: Color) {
-        // Convert the color to RGBA
-        val red = color.red / 255.0f
-        val green = color.green / 255.0f
-        val blue = color.blue / 255.0f
-        val alpha = color.alpha / 255.0f
-
-        // Set the color for drawing
-        GL11.glColor4f(red, green, blue, alpha)
-
-        // Begin drawing the rectangle
-        GL11.glBegin(GL11.GL_QUADS)
-        GL11.glVertex2f(x, y)
-        GL11.glVertex2f(x + width, y)
-        GL11.glVertex2f(x + width, y + height)
-        GL11.glVertex2f(x, y + height)
-        GL11.glEnd()
     }
 
     fun roundedRectangle(
@@ -323,7 +286,7 @@ object RenderUtils {
 
     }
 
-    fun drawLineBetter(x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double, red: Float, green: Float, blue: Float, alpha: Float, lineWidth: Float = 1f) {
+    private fun drawLineBetter(x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double, red: Float, green: Float, blue: Float, alpha: Float, lineWidth: Float = 1f) {
         val tessellator = Tessellator.getInstance()
         val worldRenderer = tessellator.worldRenderer
 
@@ -352,20 +315,20 @@ object RenderUtils {
         GlStateManager.enableAlpha()
         GlStateManager.enableBlend()
         GlStateManager.disableLighting()
-        if (disableTexture2D) GlStateManager.disableTexture2D() else GlStateManager.enableTexture2D()
+        if (disableTexture2D) GlStateManager.disableTexture2D() else enableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
 
     fun depth(depth: Boolean) {
-        if (depth) GlStateManager.enableDepth() else GlStateManager.disableDepth()
-        GlStateManager.depthMask(depth)
+        if (depth) enableDepth() else GlStateManager.disableDepth()
+        depthMask(depth)
     }
 
     private fun postDraw() {
-        GlStateManager.disableBlend()
-        GlStateManager.enableTexture2D()
-        GlStateManager.resetColor()
+        disableBlend()
+        enableTexture2D()
+        resetColor()
     }
 
     inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
@@ -373,15 +336,15 @@ object RenderUtils {
     }
 
     private fun resetDepth() {
-        GlStateManager.enableDepth()
-        GlStateManager.depthMask(true)
+        enableDepth()
+        depthMask(true)
     }
 
     fun drawLines(points: Collection<Vec3>, color: Vector3, lineWidth: Float, depth: Boolean) {
         if (points.size < 2) return
 
-        GlStateManager.pushMatrix()
-        GlStateManager.color(color.x, color.y, color.z)
+        pushMatrix()
+        color(color.x, color.y, color.z)
         preDraw()
         depth(depth)
         glEnable(GL11.GL_LINE_SMOOTH)
@@ -529,6 +492,10 @@ object RenderUtils {
         SealeoFont.text(text, x, y, color, false, (scaleText * 18).toInt())
     }
 
+    fun drawShadowText(text: String, x: Float, y: Float, color: Long, scaleText: Float) {
+        SealeoFont.shadowText(text, x, y, color, true, (scaleText * 18).toInt())
+    }
+
     fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: HSBColor) {
         matrix.runLegacyMethod(matrix.get()) {
             RoundedRect.drawHSBBox(
@@ -544,8 +511,8 @@ object RenderUtils {
     }
 
     private fun HSBColor.bind() {
-        GlStateManager.resetColor()
-        GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f)
+        resetColor()
+        color(r / 255f, g / 255f, b / 255f, a / 255f)
     }
 
     fun drawTexturedModalRect(

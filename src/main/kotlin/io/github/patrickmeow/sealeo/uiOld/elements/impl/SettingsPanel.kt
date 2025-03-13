@@ -2,14 +2,12 @@ package io.github.patrickmeow.sealeo.uiOld.elements.impl
 
 import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.features.Module
-import io.github.patrickmeow.sealeo.features.settings.impl.BooleanSetting
-import io.github.patrickmeow.sealeo.features.settings.impl.ColorSetting
-import io.github.patrickmeow.sealeo.features.settings.impl.KeybindSetting
-import io.github.patrickmeow.sealeo.features.settings.impl.NumberSetting
+import io.github.patrickmeow.sealeo.features.settings.impl.*
 import io.github.patrickmeow.sealeo.uiOld.ClickGui
 import io.github.patrickmeow.sealeo.uiOld.ClickGui.height
 import io.github.patrickmeow.sealeo.uiOld.ClickGui.x
 import io.github.patrickmeow.sealeo.uiOld.ClickGui.y
+import io.github.patrickmeow.sealeo.uiOld.animations.Animation
 import io.github.patrickmeow.sealeo.uiOld.elements.Element
 import io.github.patrickmeow.sealeo.utils.RenderUtils
 import org.lwjgl.opengl.GL11
@@ -18,6 +16,8 @@ import java.awt.Color
 class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : Element() {
 
     private var animationStartTime: Long = 0
+    private var listAnimationStart: Long = 0
+    private var listAnimationDuration = 150
     private val ANIMATION_DURATION = 250
     var animating: Boolean = false
     var closing: Boolean = false
@@ -29,6 +29,8 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
     private var currentX: Float = targetX + finalPanelWidth - initialPanelWidth
     private var currentPanelWidth: Float = initialPanelWidth
     private var rectColor: Color = Color(26, 27, 35)
+    var animation = Animation(300)
+    var closingAnim = Animation(300)
     var toggleButton = ModulesElement.ToggleButton(currentX - 10f, y + 20f, module, false)
 
     override fun draw(mouseX: Int, mouseY: Int) {
@@ -65,9 +67,10 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
                 is BooleanSetting -> SwitchElement(currentX + moduleTextPosX - 20f, y + 70f + offsetY, setting)
                 is ColorSetting -> ColorElement(currentX + moduleTextPosX - 20f, y + 70f + offsetY, setting)
                 is KeybindSetting -> KeybindElement(currentX + moduleTextPosX - 20f, y + 70f + offsetY, setting)
+                is ListSetting -> ListElement(currentX + moduleTextPosX - 20f, y + 70f + offsetY, setting)
                 else -> null
             }
-            if(element is KeybindElement && element.setting.name == "Toggle") continue
+            //if(element is KeybindElement && element.setting.name == "Toggle") continue
             element?.let {
                 if (!settingsElements.contains(it)) {
                     settingsElements.add(it)
@@ -75,7 +78,23 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
                     // Update the position of the existing element
                     val existingElement = settingsElements.find { e -> e == it }
                     existingElement?.updatePosition(currentX + moduleTextPosX - 25f, y + 70f + offsetY)
+
+                    if(existingElement is ListElement && existingElement.listOpened && existingElement.isAnimating) {
+                        animation.start()
+                        closingAnim.setPercent(0f)
+
+                    }
+                    if(existingElement is ListElement && !existingElement.listOpened && existingElement.isClosing) {
+                        closingAnim.start()
+                    }
+                    
+                    if(existingElement is ListElement) {
+                        offsetY += existingElement.setting.list.size * 16f * animation.getPercent() - existingElement.setting.list.size * 16f * closingAnim.getPercent()
+                    }
+
                 }
+
+
                 offsetY += 35f
             }
         }
@@ -95,6 +114,22 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST)
     }
+
+
+    fun startDownAnimation() {
+        listAnimationStart = System.currentTimeMillis()
+    }
+
+
+    fun updateListAnimation() {
+        val elapsedTime = System.currentTimeMillis() - listAnimationStart
+        val progress = (elapsedTime.toFloat() / listAnimationDuration).coerceIn(0f, 1f)
+
+
+
+
+    }
+
 
     fun updateAnimation() {
         val elapsedTime = System.currentTimeMillis() - animationStartTime
@@ -139,6 +174,7 @@ class SettingsPanel(var module: Module, var modulesElement: ModulesElement) : El
         super.mouseClicked(mouseX, mouseY)
         if (isMouseOver(mouseX, mouseY, currentX + 10.5f, y + 8f, 30f, 30f)) {
             startClosingAnimation()
+            animation.start()
         }
 
         for (element in settingsElements) {

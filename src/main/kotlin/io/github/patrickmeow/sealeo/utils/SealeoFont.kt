@@ -34,6 +34,10 @@ object SealeoFont {
         fontRenderer.drawString(text, x, y, color, shadow, size)
     }
 
+    fun shadowText(text: String, x: Float, y: Float, color: Long, shadow: Boolean = true, size: Int) {
+        fontRenderer.drawString(text, x, y, color, shadow, size)
+    }
+
 
 
 

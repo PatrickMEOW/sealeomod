@@ -4,6 +4,7 @@ import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.events.SlotClickEvent
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.features.Module
+import io.github.patrickmeow.sealeo.features.settings.impl.BooleanSetting
 import io.github.patrickmeow.sealeo.mixin.AccessorGuiContainer
 import io.github.patrickmeow.sealeo.utils.PacketUtils
 import net.minecraft.client.gui.ScaledResolution
@@ -35,6 +36,9 @@ object SlotBinding : Module(
     private var secondDraw: Slot? = null
 
     private val slotsMap = HashMap<Slot, Slot>()
+
+
+    private val playSound by BooleanSetting("Play sound", "Plays sound when swapping items")
 
     @SubscribeEvent
     fun onGuiClick(event: SlotClickEvent) {
@@ -118,7 +122,10 @@ object SlotBinding : Module(
         val windowId = mc.thePlayer.openContainer.windowId
         val mode = 2
         mc.playerController.windowClick(windowId, inventorySlot.slotIndex, hotbarSlot.slotIndex, mode, mc.thePlayer)
-        println("Swapping")
+        if(playSound) {
+            mc.theWorld.playSound(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, "random.pop", 2f, 1f, false)
+            println("playing sound")
+        }
     }
 
 

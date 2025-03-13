@@ -23,7 +23,7 @@ object AutoTNT: Module(
     var blocksCorrect: Int = 0
     var foundTNT = false
     var currentItem = 0
-
+    var tntUsed = false
 
     var swapBack by BooleanSetting("Swap back", "Automatically swaps back to previous item")
 
@@ -38,7 +38,10 @@ object AutoTNT: Module(
                 foundTNT = true
                 mc.thePlayer.inventory.currentItem = i
                 chat("Using TNT")
-
+                tntUsed = true
+                TickDelays.addDelayedTask(40) {
+                    tntUsed = false
+                }
                 TickDelays.addDelayedTask(1) {
                     leftClick()
                 }
@@ -88,10 +91,11 @@ object AutoTNT: Module(
             }
         }
 
-        if (blocksCorrect > 5) switchToTNT()
+        if (blocksCorrect > 4 && !tntUsed)  {
+            switchToTNT()
+            currentItem = mc.thePlayer.inventory.currentItem
+        }
     }
-
-
 
     private fun checkBlock(blockPos: BlockPos) : Boolean {
 
@@ -99,9 +103,4 @@ object AutoTNT: Module(
         val metadata = block.getMetaFromState(mc.theWorld.getBlockState(blockPos))
         return !(metadata != 2 || block.registryName != "minecraft:stonebrick")
     }
-
-
-
-
-
 }

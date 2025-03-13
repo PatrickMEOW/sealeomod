@@ -1,5 +1,6 @@
 package io.github.patrickmeow.sealeo.uiOld
 
+import io.github.patrickmeow.sealeo.Config
 import io.github.patrickmeow.sealeo.features.Category
 import io.github.patrickmeow.sealeo.uiOld.elements.impl.CategoriesElement
 import io.github.patrickmeow.sealeo.uiOld.elements.impl.ModulesElement
@@ -111,5 +112,10 @@ object ClickGui : GuiScreen() {
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         super.keyTyped(typedChar, keyCode)
         modulesElement.keyTyped(typedChar, keyCode)
+    }
+
+    override fun onGuiClosed() {
+        super.onGuiClosed()
+        Config.saveConfig()
     }
 }

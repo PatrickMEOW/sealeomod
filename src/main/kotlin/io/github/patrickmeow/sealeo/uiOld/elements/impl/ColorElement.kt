@@ -51,7 +51,8 @@ class ColorElement(var x: Float, var y: Float, var setting: ColorSetting) : Elem
 
 
     fun drawColorPicker(mouseX: Int, mouseY: Int) {
-        println(draggedY)
+
+        println(setting.value.hex)
         RenderUtils.roundedRectangle(x - 16f + draggedX, y - 30f + draggedY, 98f, 105f, bgColor, 5f, 0.1f)
 
         val boxColor = HSBColor(setting.hue, 1f, 1f)
@@ -88,7 +89,7 @@ class ColorElement(var x: Float, var y: Float, var setting: ColorSetting) : Elem
         }
 
         if(dragging == 3) {
-            smoothDrag(mouseX, mouseY)
+            // TODO: Dragging
         }
 
         RenderUtils.roundedRectangle(x + 63f + draggedX, y - 20f + (1 - setting.alpha) * 70f + draggedY, 15f, 1f, Color.GRAY)
