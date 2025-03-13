@@ -54,9 +54,6 @@ object ModuleManager {
         }
     }
 
-    fun addModule(module: Module) {
-        modules.add(module)
-    }
 
     @SubscribeEvent(receiveCanceled = true)
     fun onMessage(event: ChatReceivedEvent) {
