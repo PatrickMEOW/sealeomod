@@ -37,6 +37,10 @@ fun leftClick() {
     KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
 }
 
+fun rightClick() {
+    KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+}
+
 
 fun Event.post(): Boolean {
     return try {

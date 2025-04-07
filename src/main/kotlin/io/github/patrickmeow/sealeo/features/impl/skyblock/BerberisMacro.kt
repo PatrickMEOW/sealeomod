@@ -54,7 +54,7 @@ object BerberisMacro : Module(
       //  spawnDeadBushes()
     //}
 
-    private val rotationSpeed by NumberSetting("Rotation speed", "Rotation speed", 2f, 1f, 10f, 0.2f)
+    private val rotationSpeed by NumberSetting("Rotation speed", "Rotation speed", 2f, 1f, 15f, 0.2f)
     private val antiTp by BooleanSetting("Anti teleport", "Prevents banning after tp")
 
 

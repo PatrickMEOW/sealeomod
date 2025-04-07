@@ -14,7 +14,10 @@ object Config {
 
 
     fun saveConfig() {
-
+        if(!configFile.exists()) {
+            val fileDIr = configFile.parentFile
+            fileDIr.mkdirs()
+        }
         val settingsMap = modules.associate { module ->
             module.name to mapOf(
                 "enabled" to module.enabled,

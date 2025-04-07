@@ -4,6 +4,7 @@ import io.github.patrickmeow.sealeo.Sealeo.mc
 import io.github.patrickmeow.sealeo.events.ChatReceivedEvent
 import io.github.patrickmeow.sealeo.events.InputEvent
 import io.github.patrickmeow.sealeo.features.impl.movement.Blink
+import io.github.patrickmeow.sealeo.features.impl.movement.Scaffold
 import io.github.patrickmeow.sealeo.features.impl.movement.Simulation
 import io.github.patrickmeow.sealeo.features.impl.movement.ToggleSprint
 import io.github.patrickmeow.sealeo.features.impl.render.*
@@ -23,7 +24,8 @@ object ModuleManager {
 
     private val messageFunctions = mutableListOf<MessageFunction>()
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
-    val modules: ArrayList<Module> = arrayListOf(ToggleSprint, SlotBinding, Simulation, ClickGuiModule, RiftHelper, MobESP, AutoTNT, HitColor, BerberisMacro, Blink, ModelScale, BlockOverlay, Timers, MageBeam)
+    val modules: ArrayList<Module> = arrayListOf(ToggleSprint, CpsCounter,  Autoclicker, Simulation, ClickGuiModule, RiftHelper, MobESP,
+        AutoTNT, HitColor, BerberisMacro, Blink, ModelScale, BlockOverlay, Timers, MageBeam, Scaffold)
     private var targetYaw = 0.0f
     private var targetPitch = 0.0f
     private var isRotating = false

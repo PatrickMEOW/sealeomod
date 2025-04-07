@@ -231,7 +231,6 @@ object RenderUtils {
         enableTexture2D()
         resetColor()
         enableCull()
-
         popMatrix()
     }
 
@@ -312,16 +311,16 @@ object RenderUtils {
 
 
     private fun preDraw(disableTexture2D: Boolean = true) {
-        GlStateManager.enableAlpha()
-        GlStateManager.enableBlend()
-        GlStateManager.disableLighting()
-        if (disableTexture2D) GlStateManager.disableTexture2D() else enableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        enableAlpha()
+        enableBlend()
+        disableLighting()
+        if (disableTexture2D) disableTexture2D() else enableTexture2D()
+        tryBlendFuncSeparate(770, 771, 1, 0)
         translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
 
     fun depth(depth: Boolean) {
-        if (depth) enableDepth() else GlStateManager.disableDepth()
+        if (depth) enableDepth() else disableDepth()
         depthMask(depth)
     }
 
@@ -359,8 +358,8 @@ object RenderUtils {
         tessellator.draw()
 
         if (!depth) resetDepth()
-        GL11.glDisable(GL11.GL_LINE_SMOOTH)
-        GL11.glLineWidth(1f)
+        glDisable(GL_LINE_SMOOTH)
+        glLineWidth(1f)
         postDraw()
         popMatrix()
     }
